@@ -1,0 +1,12 @@
+Usernetes
+
+time flux run -o cpu-affinity=per-task -N2 -n 192 /opt/laghos/laghos -pa -p 1 -tf 0.6 -pt 311 -m /opt/laghos/data/cube_311_hex.mesh --ode-solver 7 --max-steps 10 --cg-tol 0 -cgm 50 -ok 3 -ot 2 -rs 4 -rp 2 --fom
+
+| Ranks | Zones   | H1 dofs | L2 dofs | QP | N dofs   | FOM0   | FOM1   | T1   | FOM2   | T2   | FOM3   | T3   | FOM    | TT   |
+|    192|   786432| 64478019| 21233664| 216| 320059014|  16.114| 1077.687| 65.813| 509.341| 3.702|  79.663| 53.309| 658.520| 117.017| 
+
+Energy  diff: 2.25e-15
+
+real    2m24.697s
+user    0m0.075s
+sys     0m0.031s

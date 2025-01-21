@@ -1,0 +1,45 @@
+Usernetes
+
+time flux run -N1 -n16 --env OMP_NUM_THREADS=4 kripke --groups 64 --gset 1 --quad 128 --dset 128 --legendre 4 --zones 64,32,32 --procs 4,2,2
+
+Figures of Merit
+================
+
+  Throughput:         1.034552e+08 [unknowns/(second/iteration)]
+  Grind time :        9.666020e-09 [(seconds/iteration)/unknowns]
+  Sweep efficiency :  94.36376 [100.0 * SweepSubdomain time / SweepSolver time]
+  Number of unknowns: 536870912
+real    0m52.933s
+
+
+
+time flux run -N2 --tasks-per-node=32 --env OMP_NUM_THREADS=1 kripke --groups 64 --gset 1 --quad 128 --dset 128 --legendre 4 --zones 64,32,32 --procs 4,4,4
+
+Figures of Merit
+================
+
+  Throughput:         1.019349e+09 [unknowns/(second/iteration)]
+  Grind time :        9.810180e-10 [(seconds/iteration)/unknowns]
+  Sweep efficiency :  62.40764 [100.0 * SweepSubdomain time / SweepSolver time]
+  Number of unknowns: 536870912
+
+real    0m6.678s
+user    0m0.071s
+sys     0m0.031s
+
+
+
+time flux run -N2 -n64 --env OMP_NUM_THREADS=1 kripke --groups 64 --gset 1 --quad 128 --dset 128 --legendre 4 --zones 64,32,32 --procs 4,4,4
+Figures of Merit
+================
+
+  Throughput:         4.494609e+08 [unknowns/(second/iteration)]
+  Grind time :        2.224888e-09 [(seconds/iteration)/unknowns]
+  Sweep efficiency :  15.95525 [100.0 * SweepSubdomain time / SweepSolver time]
+  Number of unknowns: 536870912
+
+END
+
+real    0m13.407s
+user    0m0.065s
+sys     0m0.038s
