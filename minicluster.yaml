@@ -1,0 +1,24 @@
+apiVersion: flux-framework.org/v1alpha2
+kind: MiniCluster
+metadata:
+  name: flux-sample
+spec:
+  size: 2
+  interactive: true
+  flux:
+    container:
+      disable: true
+  containers:
+    - image: docker.io/milkshake113/kripke:azure-hpc-2404
+      volumes:
+        memory-dir:
+          emptyDir: true
+          emptyDirMedium: "memory"
+      environment:
+        UCX_TLS: rc,sm
+        OMPI_MCA_btl_openib_warn_no_device_params_found: "0"
+        OMPI_MCA_btl_vader_single_copy_mechanism: none
+        OMPI_MCA_btl_openib_allow_ib: "1"
+        UCX_NET_DEVICES: mlx5_0:1
+      securityContext:
+        privileged: true

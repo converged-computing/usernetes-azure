@@ -23,4 +23,44 @@ Advanced menu:
 * select a placement group (optional)
 
 Once the VMSS is created, you can log into the first VM.
-//to continue
+
+## Installing Usernetes
+
+On the first VM, run the typical steps to install Usernetes:
+
+```
+cd usernetes
+make up
+make kubeadm-init
+make install-flannel
+make kubeconfig
+export KUBECONFIG=/home/ubuntu/usernetes/kubeconfig
+make join-command
+```
+
+Copy the join-command file to all other VMs:
+```
+flux archive create --name=join-command --mmap -C /home/azureuser/usernetes join-command
+flux exec -r 1 flux archive extract --overwrite --name=join-command -C /home/azureuser/usernetes
+```
+Launch Usernetes on the others VMs:
+```
+flux exec -r 1 --dir /home/azureuser/usernetes make up
+flux exec -r 1 --dir /home/azureuser/usernetes make kubeadm-join
+```
+Finalize installation of Usernetes, and install the Flux Operator:
+```
+make sync-external-ip
+kubectl get nodes -o wide
+echo "export KUBECONFIG=/home/azureuser/usernetes/kubeconfig" >> ~/.bashrc
+export KUBECONFIG=/home/azureuser/usernetes/kubeconfig
+kubectl apply -f https://raw.githubusercontent.com/flux-framework/flux-operator/refs/heads/main/examples/dist/flux-operator.yaml
+```
+From here, we can use Usernetes as normal and create MiniClusters. Example of the minicluster definition I used in my tests is in minicluster.yaml.
+
+```
+kubectl apply -f minicluster.yaml
+kubectl get pods
+kubectl exec -ti flux-sample-XXX -- /bin/bash
+export FLUX_URI=local:///mnt/flux/view/run/flux/local
+```
