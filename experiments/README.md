@@ -10,15 +10,35 @@ time flux exec -r all singularity pull docker://ghcr.io/converged-computing/flux
 ```
 #### Bare metal
 ```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
 time flux run -N2 -n2 -o cpu-affinity=per-task singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency
 ```
 ```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
 time flux run -N2 -n2 -o cpu-affinity=per-task singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bandwidth
 ```
 ```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
 time flux run -N2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier
 ```
 ```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
 time flux run -N2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce
 ```
 #### Usernetes
@@ -41,6 +61,12 @@ time flux run -N2 --tasks-per-node=96 -o cpu-affinity=per-task /opt/osu-benchmar
 oras login ghcr.io --username lisejolicoeur
 app=osu_latency
 
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
+
 for ((i=1; i<=20; i++)); do 
 	flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
 	flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
@@ -57,6 +83,12 @@ oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$ap
 ```
 oras login ghcr.io --username lisejolicoeur
 app=osu_bw
+
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
 
 for ((i=1; i<=20; i++)); do 
 	flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
@@ -75,6 +107,12 @@ oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$ap
 oras login ghcr.io --username lisejolicoeur
 app=osu_barrier
 
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
+
 for ((i=1; i<=20; i++)); do 
         flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
         flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
@@ -90,6 +128,12 @@ oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$ap
 ```
 oras login ghcr.io --username lisejolicoeur
 app=osu_allreduce
+
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
 
 for ((i=1; i<=20; i++)); do 
         flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
@@ -110,6 +154,12 @@ oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$ap
 oras login ghcr.io --username lisejolicoeur
 app=osu_latency
 
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
+
 for ((i=1; i<=20; i++)); do 
 	flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
 	flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
@@ -126,6 +176,12 @@ oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernete
 ```
 oras login ghcr.io --username lisejolicoeur
 app=osu_bw
+
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
 
 for ((i=1; i<=20; i++)); do 
 	flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
@@ -144,6 +200,12 @@ oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernete
 oras login ghcr.io --username lisejolicoeur
 app=osu_barrier
 
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
+
 for ((i=1; i<=20; i++)); do 
         flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
         flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
@@ -159,6 +221,12 @@ oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernete
 ```
 oras login ghcr.io --username lisejolicoeur
 app=osu_allreduce
+
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
 
 for ((i=1; i<=20; i++)); do 
         flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
@@ -182,10 +250,20 @@ time flux exec -r all singularity pull docker.io/milkshake113/lammps:azure-hpc-2
 ```
 #### Bare metal
 ```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
 #from flux-usernetes aws experiments
 time flux run -N 2 --tasks-per-node=96 -c 1 -o cpu-affinity=per-task singularity exec lammps_azure-hpc-2404.sif /usr/bin/lmp -v x 16 -v y 16 -v z 8 -in ./in.reaxff.hns -nocite
 ```
 ```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
 #from performance study experiments
 time flux run -N 2 --tasks-per-node=96 -c 1 -o cpu-affinity=per-task singularity exec lammps_azure-hpc-2404.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite
 ```
@@ -216,6 +294,11 @@ time flux exec -r all singularity pull docker.io/milkshake113/minife:azure-hpc-2
 ```
 #### Bare metal
 ```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
 #from performance study experiments
 time flux run -N2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec minife_azure-hpc-2404.sif miniFE.x nx=230 ny=230 nz=230 use_locking=1 elem_group_size=10 use_elem_mat_fields=300 verify_solution=0
 ```
@@ -243,6 +326,11 @@ time flux exec -r all singularity pull docker.io/milkshake113/amg:azure-hpc-2404
 
 #### Bare metal
 ```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl_openib_warn_no_device_params_found=0
+export OMPI_MCA_btl_vader_single_copy_mechanism=none
+export OMPI_MCA_btl_openib_allow_ib=1
 #from performance study experiments
 time flux run --env OMP_NUM_THREADS=3 -N 2 --tasks-per-node=4 -o cpu-affinity=per-task singularity exec amg_azure-hpc-2404.sif amg -n 32 32 32 -P 2 2 2 -problem 2
 ```
