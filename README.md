@@ -51,10 +51,13 @@ flux exec -r 1 --dir /home/azureuser/usernetes make kubeadm-join
 Finalize installation of Usernetes, and install the Flux Operator:
 ```
 make sync-external-ip
-kubectl get nodes -o wide
 echo "export KUBECONFIG=/home/azureuser/usernetes/kubeconfig" >> ~/.bashrc
 export KUBECONFIG=/home/azureuser/usernetes/kubeconfig
+kubectl get nodes -o wide
 kubectl apply -f https://raw.githubusercontent.com/flux-framework/flux-operator/refs/heads/main/examples/dist/flux-operator.yaml
+(optional)
+On a 2 node cluster, allow pods to be scheduled to the controller node:
+kubectl taint node u7s-flux-user000000 node-role.kubernetes.io/control-plane:NoSchedule-
 ```
 From here, we can use Usernetes as normal and create MiniClusters. Example of the minicluster definition I used in my tests is in minicluster.yaml.
 
