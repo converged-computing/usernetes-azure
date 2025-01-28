@@ -13,149 +13,148 @@ user	0m0.007s
 sys	0m0.009s
 ```
 
-#### Testing the env vars
+#### Environment variables
 ```
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
-flux run -N2 -n2 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif env | grep UCX
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+export OMPI_MCA_spml=ucx
+export OMPI_MCA_osc=ucx
+
+flux run -N1 -n1 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif env | grep UCX
+
 UCX_NET_DEVICES=mlx5_0:1
 UCX_TLS=rc,sm
-UCX_NET_DEVICES=mlx5_0:1
-UCX_TLS=rc,sm
+
+flux run -N1 -n1 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif env | grep OMPI
+
+OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_btl_vader_backing_directory=/opt/run/flux/jobtmp-0-ƒ4bo9NTSf
+OMPI_MCA_pml=ucx
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
 ```
 #### Bare metal
 ```
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
+
 time flux run -N2 -n2 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency
 
+[ 3420.098285] infiniband mlx5_1: create_qp:3323:(pid 300371): Create QP type 2 failed
+....
 # OSU MPI Latency Test v5.8
 # Size          Latency (us)
-0                       1.62
+0                       1.61
 1                       1.61
 2                       1.61
-4                       1.62
-8                       1.62
+4                       1.61
+8                       1.61
 16                      1.62
-32                      1.79
-64                      1.84
-128                     1.90
-256                     2.39
-512                     2.51
-1024                    2.70
-2048                    2.82
-4096                    3.56
-8192                    4.08
-16384                   5.37
-32768                   6.93
-65536                   9.45
-131072                 14.81
-262144                 17.35
-524288                 28.16
-1048576                49.52
-2097152                92.44
-4194304               178.11
+32                      1.75
+64                      1.78
+128                     1.82
+256                     2.35
+512                     2.45
+1024                    2.59
+2048                    2.77
+4096                    3.55
+8192                    4.09
+16384                   5.38
+32768                   6.97
+65536                   9.46
+131072                 14.46
+262144                 17.62
+524288                 28.48
+1048576                49.98
+2097152                93.80
+4194304               179.11
 
-real	0m2.180s
-user	0m0.070s
-sys	0m0.024s
+real    0m2.194s
+user    0m0.077s
 ```
 ```
-export OMPI_MCA_pml=ucx
-export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
 time flux run -N2 -n2 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw
 
+[ 3420.098285] infiniband mlx5_1: create_qp:3323:(pid 300371): Create QP type 2 failed
+....
 # OSU MPI Bandwidth Test v5.8
 # Size      Bandwidth (MB/s)
-1                       3.93
-2                       7.85
-4                      15.91
-8                      31.66
-16                     63.49
-32                    126.84
-64                    243.42
-128                   484.89
-256                   928.20
-512                  1726.90
-1024                 3379.98
-2048                 5981.88
-4096                 9116.32
-8192                13368.89
-16384               14218.37
-32768               21119.32
-65536               22323.65
-131072              23790.31
-262144              23887.74
-524288              24162.21
-1048576             24318.09
-2097152             24579.14
-4194304             24308.22
+1                       3.88
+2                       7.92
+4                      16.14
+8                      31.91
+16                     63.71
+32                    127.70
+64                    247.02
+128                   493.01
+256                   940.30
+512                  1765.59
+1024                 3381.33
+2048                 6057.63
+4096                 9050.88
+8192                13470.27
+16384               14390.78
+32768               20167.41
+65536               22544.32
+131072              23722.18
+262144              24238.68
+524288              24454.23
+1048576             24562.45
+2097152             24617.71
+4194304             24453.38
 
-real	0m1.177s
-user	0m0.073s
-sys	0m0.021s
+real    0m1.162s
+user    0m0.078s
+sys     0m0.024s
 ```
 ```
-export OMPI_MCA_pml=ucx
-export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
+# --env UCX_NET_DEVICES=mlx5_0:1 does not remove the warning thrown at execution
 time flux run -N2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier
 
-[flux-user000001:313200] shmem: mmap: an error occurred while determining whether or not /opt/run/flux/jobtmp-1-ƒ25NDu3ex7/vader_segment.flux-user000001.1000.0.88 could be created.
-
+[ 3420.098285] infiniband mlx5_1: create_qp:3323:(pid 300371): Create QP type 2 failed
+....
 # OSU MPI Barrier Latency Test v5.8
 # Avg Latency(us)
-             8.63
+             8.32
 
-real	0m7.832s
-user	0m0.080s
-sys	0m0.025s
+real    0m7.045s
+user    0m0.077s
+sys     0m0.026s
 ```
 ```
-export OMPI_MCA_pml=ucx
-export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
 time flux run -N2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce
 
-[flux-user000001:313200] shmem: mmap: an error occurred while determining whether or not /opt/run/flux/jobtmp-1-ƒ25NDu3ex7/vader_segment.flux-user000001.1000.0.88 could be created.
+[ 3420.098285] infiniband mlx5_1: create_qp:3323:(pid 300371): Create QP type 2 failed
+....
 # OSU MPI Allreduce Latency Test v5.8
 # Size       Avg Latency(us)
-4                       9.92
-8                       9.92
-16                      9.74
-32                     14.18
-64                     12.63
-128                    18.62
-256                    19.27
-512                    22.99
-1024                   23.51
-2048                   30.15
-4096                   49.65
-8192                  320.73
-16384                 113.62
-32768                 415.49
-65536                 178.14
-131072               2008.99
-262144                461.29
-524288               1060.64
-1048576              2123.25
+4                      10.08
+8                       9.57
+16                      9.18
+32                     11.45
+64                     12.13
+128                    18.39
+256                    17.15
+512                    19.77
+1024                   22.67
+2048                   27.75
+4096                   54.32
+8192                  326.91
+16384                 104.84
+32768                 418.40
+65536                 157.01
+131072               2041.94
+262144                505.41
+524288               1023.61
+1048576              2066.89
 
-real	0m13.568s
-user	0m0.071s
-sys	0m0.035s
+real    0m9.502s
+user    0m0.082s
+sys     0m0.027s
 ```
 #### Usernetes
 
@@ -179,10 +178,11 @@ spec:
           emptyDirMedium: "memory"
       environment:
         UCX_TLS: rc,sm
-        OMPI_MCA_btl_openib_warn_no_device_params_found: "0"
-        OMPI_MCA_btl_vader_single_copy_mechanism: none
-        OMPI_MCA_btl_openib_allow_ib: "1"
+	OMPI_MCA_btl: ^vader,tcp,openib,uct
+	OMPI_MCA_pml: ucx
         UCX_NET_DEVICES: mlx5_0:1
+	OMPI_MCA_spml: ucx
+	OMPI_MCA_osc: ucx
       securityContext:
         privileged: true
 ```
@@ -266,11 +266,6 @@ user	0m0.071s
 sys	0m0.026s
 ```
 ```
-export OMPI_MCA_pml=ucx
-export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
 time flux run -N2 --tasks-per-node=96 -o cpu-affinity=per-task /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier
 
 # OSU MPI Barrier Latency Test v5.8
@@ -282,11 +277,6 @@ user	0m0.078s
 sys	0m0.025s
 ```
 ```
-export OMPI_MCA_pml=ucx
-export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
 time flux run -N2 --tasks-per-node=96 -o cpu-affinity=per-task /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce
 
 # OSU MPI Allreduce Latency Test v5.8
@@ -324,9 +314,9 @@ app=osu_latency
 
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
 
 for ((i=1; i<=20; i++)); do 
 	flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
@@ -347,9 +337,9 @@ app=osu_bw
 
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
 
 for ((i=1; i<=20; i++)); do 
 	flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
@@ -370,9 +360,9 @@ app=osu_barrier
 
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
 
 for ((i=1; i<=20; i++)); do 
         flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
@@ -392,9 +382,9 @@ app=osu_allreduce
 
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
 
 for ((i=1; i<=20; i++)); do 
         flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
@@ -417,9 +407,9 @@ app=osu_latency
 
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
 
 for ((i=1; i<=20; i++)); do 
 	flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
@@ -440,9 +430,9 @@ app=osu_bw
 
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
 
 for ((i=1; i<=20; i++)); do 
 	flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
@@ -463,9 +453,9 @@ app=osu_barrier
 
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
 
 for ((i=1; i<=20; i++)); do 
         flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
@@ -485,9 +475,9 @@ app=osu_allreduce
 
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
 
 for ((i=1; i<=20; i++)); do 
         flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
@@ -517,12 +507,16 @@ sys	0m0.011s
 ```
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
-#from flux-usernetes aws experiments
-time flux run -N 2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS usernetes-azure_lammps.sif /usr/bin/lmp -v x 16 -v y 16 -v z 8 -in ./in.reaxff.hns -nocite
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+export OMPI_MCA_spml=ucx
+export OMPI_MCA_osc=ucx
 
+#from flux-usernetes aws experiments
+time flux run -N 2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS --env UCX_NET_DEVICES=mlx5_0:1 usernetes-azure_lammps.sif /usr/bin/lmp -v x 16 -v y 16 -v z 8 -in ./in.reaxff.hns -nocite
+
+[ 3420.098285] infiniband mlx5_1: create_qp:3323:(pid 300371): Create QP type 2 failed
+....
+WARNING on proc 0: Cannot open log.lammps for writing: Read-only file system (src/lammps.cpp:511)
 LAMMPS (17 Apr 2024 - Development - a8687b5)
 OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
   using 1 OpenMP thread(s) per MPI task
@@ -533,7 +527,7 @@ Reading data file ...
   304 atoms
   reading velocities ...
   304 velocities
-  read_data CPU = 0.138 seconds
+  read_data CPU = 0.127 seconds
 Replication is creating a 16x16x8 = 2048 times larger system...
   triclinic box = (0 0 0) to (357.216 178.2592 110.23173) with tilt (0 -40.20824 0)
   8 by 6 by 4 MPI processor grid
@@ -541,7 +535,7 @@ Replication is creating a 16x16x8 = 2048 times larger system...
   bounding box extra memory = 0.03 MB
   average # of replicas added to proc = 46.75 out of 2048 (2.28%)
   622592 atoms
-  replicate CPU = 0.017 seconds
+  replicate CPU = 0.015 seconds
 Neighbor list info ...
   update: every = 20 steps, delay = 0 steps, check = no
   max neighbors/atom: 2000, page size: 100000
@@ -576,20 +570,20 @@ Per MPI rank memory allocation (min/avg/max) = 252.5 | 252.7 | 253 Mbytes
         80   297.50375     -113.27022      8342.3188     -111.57091     -1.6993152      7019230      
         90   301.3484      -113.28168      9484.1542     -111.5827      -1.6989854      7019230      
        100   302.48622     -113.28501      10463.506     -111.58627     -1.6987438      7019230      
-Loop time of 37.2019 on 192 procs for 100 steps with 622592 atoms
+Loop time of 37.0552 on 192 procs for 100 steps with 622592 atoms
 
-Performance: 0.023 ns/day, 1033.386 hours/ns, 2.688 timesteps/s, 1.674 Matom-step/s
-99.8% CPU use with 192 MPI tasks x 1 OpenMP threads
+Performance: 0.023 ns/day, 1029.311 hours/ns, 2.699 timesteps/s, 1.680 Matom-step/s
+99.9% CPU use with 192 MPI tasks x 1 OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 20.521     | 22.952     | 25.449     |  19.6 | 61.69
-Neigh   | 0.36918    | 0.37497    | 0.38674    |   0.6 |  1.01
-Comm    | 0.052625   | 2.3293     | 5.0327     |  64.3 |  6.26
-Output  | 0.037018   | 0.19636    | 0.37756    |  18.3 |  0.53
-Modify  | 11.121     | 11.346     | 12.044     |   8.2 | 30.50
-Other   |            | 0.003397   |            |       |  0.01
+Pair    | 20.653     | 23.087     | 25.919     |  20.5 | 62.30
+Neigh   | 0.36974    | 0.37636    | 0.3904     |   0.6 |  1.02
+Comm    | 0.043263   | 2.4378     | 5.2333     |  65.7 |  6.58
+Output  | 0.0013471  | 0.11683    | 0.28654    |  20.5 |  0.32
+Modify  | 10.7       | 11.035     | 11.913     |  10.9 | 29.78
+Other   |            | 0.002731   |            |       |  0.01
 
 Nlocal:        3242.67 ave        3264 max        3217 min
 Histogram: 13 27 21 2 2 10 38 49 22 8
@@ -604,16 +598,12 @@ Neighbor list builds = 5
 Dangerous builds not checked
 Total wall time: 0:00:38
 
-real	0m47.461s
-user	0m0.078s
-sys	0m0.031s
+real    0m44.051s
+user    0m0.080s
+sys     0m0.059s
+
 ```
 ```
-export OMPI_MCA_pml=ucx
-export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
 #from performance study experiments
 time flux run -N 2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite
 
@@ -661,23 +651,23 @@ sys	0m0.006s
 ```
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
-#from performance study experiments
-time flux run -N2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_minife.sif miniFE.x nx=230 ny=230 nz=230 use_locking=1 elem_group_size=10 use_elem_mat_fields=300 verify_solution=0
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+export OMPI_MCA_spml=ucx
+export OMPI_MCA_osc=ucx
 
-[flux-user000000:296951] shmem: mmap: an error occurred while determining whether or not /opt/run/flux/jobtmp-0-ƒcpd31w3M/vader_segment.flux-user000000.1000.0.84 could be created.
+#from performance study experiments
+time flux run -N2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec --bind /opt:/opt /opt/usernetes-azure_minife.sif miniFE.x nx=230 ny=230 nz=230 use_locking=1 elem_group_size=10 use_elem_mat_fields=300 verify_solution=0
+
 MiniFE Mini-App, OpenMP Peer Implementation
 Creating OpenMP Thread Pool...
 Counted: 192 threads.
 Running MiniFE Mini-App...
-      creating/filling mesh...0.031354s, total time: 0.031354
-generating matrix structure...0.0711298s, total time: 0.102484
-         assembling FE data...0.131878s, total time: 0.234362
-      imposing Dirichlet BC...0.025538s, total time: 0.2599
-      imposing Dirichlet BC...0.00152397s, total time: 0.261424
-making matrix indices local...0.0412889s, total time: 0.302712
+      creating/filling mesh...0.00914598s, total time: 0.00914598
+generating matrix structure...0.07336s, total time: 0.0825059
+         assembling FE data...0.132909s, total time: 0.215415
+      imposing Dirichlet BC...0.026612s, total time: 0.242027
+      imposing Dirichlet BC...0.0016129s, total time: 0.24364
+making matrix indices local...0.04285s, total time: 0.28649
 Starting CG solver ... 
 Initial Residual = 231.002
 Iteration = 20   Residual = 0.0808553
@@ -692,12 +682,76 @@ Iteration = 180   Residual = 0.00212219
 Iteration = 200   Residual = 0.00140664
 Final Resid Norm: 0.00140664
 
-real	0m8.983s
-user	0m0.082s
-sys	0m0.032s
+real    0m7.393s
+user    0m0.071s
+sys     0m0.034s
 
-#can't find the output YAML file
 
+YAML file content:
+
+Mini-Application Name: miniFE
+Mini-Application Version: 2.0
+Global Run Parameters: 
+  dimensions: 
+    nx: 230
+    ny: 230
+    nz: 230
+  load_imbalance: 0
+  mv_overlap_comm_comp: 0 (no)
+  OpenMP Max Threads:: 1
+  number of processors: 192
+  ScalarType: double
+  GlobalOrdinalType: int
+  LocalOrdinalType: int
+Platform: 
+  hostname: buildkitsandbox
+  kernel name: 'Linux'
+  kernel release: '6.8.0-1017-azure'
+  processor: 'x86_64'
+Build: 
+  CXX: '/usr/local/bin/mpicxx'
+  compiler version: 'g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0'
+  CXXFLAGS: '-O3 -fopenmp'
+  using MPI: yes
+Run Date/Time: 2025-01-28, 15-21-24
+Rows-per-proc Load Imbalance: 
+  Largest (from avg, %): 6.17046
+  Std Dev (%): 2.51343
+Matrix structure generation: 
+  Mat-struc-gen Time: 0.07336
+FE assembly: 
+  FE assembly Time: 0.132909
+Matrix attributes: 
+  Global Nrows: 12326391
+  Global NNZ: 329939371
+  Global Memory (GB): 3.7792
+  Pll Memory Overhead (MB): 19.929
+  Rows per proc MIN: 60648
+  Rows per proc MAX: 67280
+  Rows per proc AVG: 64200
+  NNZ per proc MIN: 1637496
+  NNZ per proc MAX: 1816560
+  NNZ per proc AVG: 1.71843e+06
+CG solve: 
+  Iterations: 200
+  Final Resid Norm: 0.00140664
+  WAXPY Time: 0.0402985
+  WAXPY Flops: 2.19736e+10
+  WAXPY Mflops: 545271
+  DOT Time: 0.148738
+  DOT Flops: 9.7336e+09
+  DOT Mflops: 65441.1
+  MATVEC Time: 0.540604
+  MATVEC Flops: 1.32636e+11
+  MATVEC Mflops: 245347
+  Total: 
+    Total CG Time: 0.73506
+    Total CG Flops: 1.64343e+11
+    Total CG Mflops: 223577
+  Time per iteration: 0.0036753
+Global All-RSS (kB): 28375868
+Global Max-RSS (kB): 159840
+Total Program Time: 1.34695
 ```
 #### Usernetes
 ```
@@ -730,26 +784,27 @@ sys	0m0.009s
 ```
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
-export OMPI_MCA_btl_openib_warn_no_device_params_found=0
-export OMPI_MCA_btl_vader_single_copy_mechanism=none
-export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+export OMPI_MCA_spml=ucx
+export OMPI_MCA_osc=ucx
+
 #from performance study experiments
-time flux run --env OMP_NUM_THREADS=3 -N 2 --tasks-per-node=4 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg.sif amg -n 128 128 128 -P 2 2 2 -problem 2
+time flux run --env OMP_NUM_THREADS=3 -N 2 --tasks-per-node=4 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg.sif amg -n 256 256 128 -P 2 2 2 -problem 2
 
 Running with these driver parameters:
   solver ID    = 3
 
   Laplacian_27pt:
-    (Nx, Ny, Nz) = (256, 256, 256)
+    (Nx, Ny, Nz) = (512, 512, 256)
     (Px, Py, Pz) = (2, 2, 2)
 
 =============================================
 Generate Matrix:
 =============================================
 Spatial Operator:
-  wall clock time = 0.232914 seconds
+  wall clock time = 0.840630 seconds
   wall MFLOPS     = 0.000000
-  cpu clock time  = 0.649774 seconds
+  cpu clock time  = 2.329313 seconds
   cpu MFLOPS      = 0.000000
 
   RHS vector has unit components
@@ -758,35 +813,35 @@ Spatial Operator:
 IJ Vector Setup:
 =============================================
 RHS and Initial Guess:
-  wall clock time = 0.028427 seconds
+  wall clock time = 0.099909 seconds
   wall MFLOPS     = 0.000000
-  cpu clock time  = 0.056210 seconds
+  cpu clock time  = 0.142580 seconds
   cpu MFLOPS      = 0.000000
 
 =============================================
 Problem 2: Cumulative AMG-GMRES Solve Time:
 =============================================
 GMRES Solve:
-  wall clock time = 44.517956 seconds
+  wall clock time = 194.876108 seconds
   wall MFLOPS     = 0.000000
-  cpu clock time  = 130.257644 seconds
+  cpu clock time  = 570.104697 seconds
   cpu MFLOPS      = 0.000000
 
 
 No. of Time Steps = 6
-Cum. No. of Iterations = 214
-Final Relative Residual Norm = 1.418515e-14
+Cum. No. of Iterations = 215
+Final Relative Residual Norm = 3.916826e-14
 
 
 nnz AP * (Iterations + time_steps) / Total Time: 
 
-Figure of Merit (FOM_2): 2.426706e+09
+Figure of Merit (FOM_2): 2.234090e+09
 
 
 
-real	0m45.714s
-user	0m0.074s
-sys	0m0.023s
+real    3m16.702s
+user    0m0.072s
+sys     0m0.038s
 ```
 
 #### Usernetes
@@ -809,7 +864,7 @@ TODO
 ```
 #docker.io/milkshake113/resnet:azure-hpc-2404
 cd /opt
-time flux exec -r all singularity pull docker://ghcr.io/converged-computing/usernetes-azure:resnet
+time flux exec -r 0,1 singularity pull docker://ghcr.io/converged-computing/usernetes-azure:resnet
 ```
 
 #### Bare metal
