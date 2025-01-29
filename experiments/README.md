@@ -1221,13 +1221,55 @@ TODO
 
 #### Container pull
 ```
-#docker.io/milkshake113/resnet:azure-hpc-2404
 cd /opt
 time flux exec -r 0,1 singularity pull docker://ghcr.io/converged-computing/usernetes-azure:resnet
+
+real    7m1.034s
+user    0m0.008s
+sys     0m0.163s
+```
+```
+launch.sh
+
+job_name="${1:-flux-sample}"
+nodes="${2:-2}"
+proc_per_node="${3:-4}"
+batch_size="${4:-32}"
+
+export LOCAL_RANK=${FLUX_TASK_RANK}
+export RANK=${FLUX_TASK_RANK}
+export WORLD_SIZE=${nodes}
+MASTER_ADDR=${job_name}0
+
+if [[ "${FLUX_TASK_RANK}" == "0" ]]; then
+  echo "Torchrun for lead node"
+  torchrun \
+  --nproc_per_node=${proc_per_node} --nnodes=${nodes} --node_rank=${RANK} \
+  --master_addr=$MASTER_ADDR --master_port=8080 \
+  main.py \
+  --backend=nccl --use_syn --batch_size=${batch_size} --arch=resnet152
+
+else
+  echo "Torchrun for follower node"
+  torchrun \
+  --nproc_per_node=${proc_per_node} --nnodes=${nodes} --node_rank=${RANK} \
+  --master_addr=$MASTER_ADDR --master_port=8080 \
+  main.py \
+  --backend=nccl --use_syn --batch_size=${batch_size} --arch=resnet152
+fi
 ```
 
 #### Bare metal
-TODO
+```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+export OMPI_MCA_spml=ucx
+export OMPI_MCA_osc=ucx
+
+time flux run -N 2 singularity exec --bind /opt/launch.sh:/opt/launch.sh /opt/usernetes-azure_resnet.sif /bin/bash ./launch.sh flux-user00000 2 4
+
+```
 #### Usernetes
 TODO
 ### Scale
