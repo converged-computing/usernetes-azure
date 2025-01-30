@@ -619,6 +619,21 @@ user	0m0.076s
 sys	0m0.086s
 ```
 
+```
+#too long, runs for more than 13 minutes, but does not OOM
+time flux run -N 4 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS --env UCX_NET_DEVICES=mlx5_0:1 usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite
+
+^Cflux-job: one more ctrl-C within 2s to cancel or ctrl-Z to detach
+^C790.652s: job.exception type=cancel severity=0 interrupted by ctrl-C
+^C790.804s: job.exception type=cancel severity=0 interrupted by ctrl-C
+^C790.939s: job.exception type=cancel severity=0 interrupted by ctrl-C
+flux-job: task(s) Terminated
+
+real	13m11.273s
+user	0m0.077s
+sys	0m0.027s
+```
+
 #### Usernetes
 
 Usernetes CRD for these tests:
