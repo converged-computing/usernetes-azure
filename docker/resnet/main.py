@@ -175,16 +175,14 @@ def main():
     # Encapsulate the model on the GPU assigned to the current process
     model = getattr(torchvision.models, argv.arch)(weights=None)
 
-    device = torch.device("cuda:{}".format(LOCAL_RANK))
+    device = torch.device("cpu")
     model = model.to(device)
     ddp_model = torch.nn.parallel.DistributedDataParallel(
         model, device_ids=[LOCAL_RANK], output_device=LOCAL_RANK
     )
-
-    # We only save the model who uses device "cuda:0"
-    # To resume, the device for the saved model would also be "cuda:0"
+    
     if resume is True:
-        map_location = {"cuda:0": "cuda:{}".format(LOCAL_RANK)}
+        map_location = torch.device("cpu")
         ddp_model.load_state_dict(torch.load(model_filepath, map_location=map_location))
 
     if use_syn:
@@ -257,7 +255,6 @@ def main():
                 loss = criterion(outputs, labels_syn)
                 loss.backward()
                 optimizer.step()
-            torch.cuda.synchronize()
             end_epoch = time.time()
             elapsed = end_epoch - start_epoch
 
@@ -273,7 +270,6 @@ def main():
                 loss.backward()
                 optimizer.step()
                 count += 1
-            torch.cuda.synchronize()
             end_epoch = time.time()
             elapsed = end_epoch - start_epoch
 
