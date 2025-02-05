@@ -177,9 +177,7 @@ def main():
 
     device = torch.device("cpu")
     model = model.to(device)
-    ddp_model = torch.nn.parallel.DistributedDataParallel(
-        model, device_ids=[LOCAL_RANK], output_device=LOCAL_RANK
-    )
+    ddp_model = torch.nn.parallel.DistributedDataParallel(model)
     
     if resume is True:
         map_location = torch.device("cpu")
