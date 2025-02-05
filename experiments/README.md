@@ -1244,15 +1244,6 @@ user    0m0.008s
 sys     0m0.163s
 ```
 
-(optional)
-To prefetch the dataset (to do on all nodes, or on one and then copy the dataset with flux archive):
-```
-singularity exec --bind /tmp:/tmp usernetes-azure_resnet.sif python
->>> import torchvision.datasets as datasets
->>> data_dir = '/tmp/'
->>> dataset = datasets.CIFAR10(root=data_dir, download=True)
-```
-
 #### Bare metal
 ```
 export OMPI_MCA_pml=ucx
@@ -1260,9 +1251,18 @@ export UCX_TLS=rc,sm
 export OMPI_MCA_btl=^vader,tcp,openib,uct
 export OMPI_MCA_spml=ucx
 export OMPI_MCA_osc=ucx
+```
+```
+launch.sh
+arch=resnet18
+```
+```
+flux run -N 2 -o pmi=pmix singularity exec --bind /tmp:/tmp --bind /opt/run/flux:/opt/run/flux --bind launch.sh:/opt/launch.sh --bind main.py:/opt/main.py /opt/usernetes-azure_resnet.sif /bin/bash /opt/launch.sh flux-user00000 2 96 2
 
-flux run -N 2 -o pmi=pmix singularity exec --bind /tmp:/tmp --bind /opt/run/flux:/opt/run/flux --bind launch.sh:/opt/launch.sh --bind main.py:/opt/main.py /opt/usernetes-azure_resnet.sif /bin/bash /opt/launch.sh flux-user00000 2 4
-#very long
+[1738777207.198200] [flux-user000000:5072 :0]       tag_match.c:62   UCX  WARN  unexpected tag-receive descriptor 0x781ca000c640 was not matched
+[1738777207.198223] [flux-user000000:5072 :0]       tag_match.c:62   UCX  WARN  unexpected tag-receive descriptor 0x781ca000c580 was not matched
+[1738777207.198229] [flux-user000000:5072 :0]       tag_match.c:62   UCX  WARN  unexpected tag-receive descriptor 0x781ca000c4c0 was not matched
+
 ```
 #### Usernetes
 TODO
