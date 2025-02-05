@@ -1244,6 +1244,15 @@ user    0m0.008s
 sys     0m0.163s
 ```
 
+(optional)
+To prefetch the dataset (to do on all nodes, or on one and then copy the dataset with flux archive):
+```
+singularity exec --bind /tmp:/tmp usernetes-azure_resnet.sif python
+>>> import torchvision.datasets as datasets
+>>> data_dir = '/tmp/'
+>>> dataset = datasets.CIFAR10(root=data_dir, download=True)
+```
+
 #### Bare metal
 ```
 export OMPI_MCA_pml=ucx
@@ -1252,8 +1261,8 @@ export OMPI_MCA_btl=^vader,tcp,openib,uct
 export OMPI_MCA_spml=ucx
 export OMPI_MCA_osc=ucx
 
-flux run -N 2 -o pmi=pmix singularity exec --bind /tmp:/tmp --bind /opt/run/flux:/opt/run/flux --bind /opt/launch.sh:/opt/launch.sh --bind /opt/main.py:/opt/main.py /opt/usernetes-azure_resnet.sif torchrun --standalone /opt/main.py --backend=mpi
-
+flux run -N 2 -o pmi=pmix singularity exec --bind /tmp:/tmp --bind /opt/run/flux:/opt/run/flux --bind launch.sh:/opt/launch.sh --bind main.py:/opt/main.py /opt/usernetes-azure_resnet.sif /bin/bash /opt/launch.sh flux-user00000 2 4
+#very long
 ```
 #### Usernetes
 TODO
