@@ -16,7 +16,7 @@ if [[ "${FLUX_TASK_RANK}" == "0" ]]; then
   --nproc_per_node=${proc_per_node} --nnodes=${nodes} --node_rank=${RANK} \
   --master_addr=$MASTER_ADDR --master_port=8080 \
   main.py \
-  --backend=nccl --use_syn --batch_size=${batch_size} --arch=resnet152
+  --backend=mpi --use_syn --batch_size=${batch_size} --arch=resnet152
 
 else
   echo "Torchrun for follower node"
@@ -24,5 +24,5 @@ else
   --nproc_per_node=${proc_per_node} --nnodes=${nodes} --node_rank=${RANK} \
   --master_addr=$MASTER_ADDR --master_port=8080 \
   main.py \
-  --backend=nccl --use_syn --batch_size=${batch_size} --arch=resnet152
+  --backend=mpi --use_syn --batch_size=${batch_size} --arch=resnet152
 fi
