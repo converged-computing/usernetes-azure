@@ -1070,59 +1070,15 @@ export OMPI_MCA_spml=ucx
 export OMPI_MCA_osc=ucx
 
 #from performance study experiments
-time flux run --env OMP_NUM_THREADS=3 -N 2 --tasks-per-node=4 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg.sif amg -n 256 256 128 -P 2 2 2 -problem 2
-
-Running with these driver parameters:
-  solver ID    = 3
-
-  Laplacian_27pt:
-    (Nx, Ny, Nz) = (512, 512, 256)
-    (Px, Py, Pz) = (2, 2, 2)
-
-=============================================
-Generate Matrix:
-=============================================
-Spatial Operator:
-  wall clock time = 0.840630 seconds
-  wall MFLOPS     = 0.000000
-  cpu clock time  = 2.329313 seconds
-  cpu MFLOPS      = 0.000000
-
-  RHS vector has unit components
-  Initial guess is 0
-=============================================
-IJ Vector Setup:
-=============================================
-RHS and Initial Guess:
-  wall clock time = 0.099909 seconds
-  wall MFLOPS     = 0.000000
-  cpu clock time  = 0.142580 seconds
-  cpu MFLOPS      = 0.000000
-
-=============================================
-Problem 2: Cumulative AMG-GMRES Solve Time:
-=============================================
-GMRES Solve:
-  wall clock time = 194.876108 seconds
-  wall MFLOPS     = 0.000000
-  cpu clock time  = 570.104697 seconds
-  cpu MFLOPS      = 0.000000
-
-
-No. of Time Steps = 6
-Cum. No. of Iterations = 215
-Final Relative Residual Norm = 3.916826e-14
-
-
-nnz AP * (Iterations + time_steps) / Total Time: 
-
-Figure of Merit (FOM_2): 2.234090e+09
+time flux run --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 2 -n 64 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg.sif amg -n 256 256 128 -P 8 4 2 -problem 2
 
 
 
-real    3m16.702s
-user    0m0.072s
-sys     0m0.038s
+
+
+time flux run --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 2 -n 8 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg.sif amg -n 256 256 128 -P 2 2 2 -problem 2
+
+
 ```
 
 #### Usernetes
@@ -1245,6 +1201,14 @@ sys     0m0.163s
 ```
 
 #### Bare metal
+
+Clone this repo to get newer version of main.py and launch.sh
+```
+cd /opt
+git clone https://github.com/converged-computing/usernetes-azure
+cd usernetes-azure/docker/resnet
+```
+
 ```
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
@@ -1252,10 +1216,7 @@ export OMPI_MCA_btl=^vader,tcp,openib,uct
 export OMPI_MCA_spml=ucx
 export OMPI_MCA_osc=ucx
 ```
-```
-launch.sh
-arch=resnet18
-```
+
 ```
 #backend=mpi
 flux run -N 1 -o cpu-affinity=per-task --tasks-per-node=1 -o mpi=none -o pmi=pmix singularity exec --bind /tmp:/tmp --bind /opt/run/flux:/opt/run/flux --bind launch.sh:/opt/launch.sh --bind main.py:/opt/main.py /opt/usernetes-azure_resnet.sif /bin/bash /opt/launch.sh flux-user00000 1 8 128
