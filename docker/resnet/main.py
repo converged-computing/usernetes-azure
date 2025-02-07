@@ -171,6 +171,7 @@ def main():
     torch.distributed.init_process_group(
         backend=backend, rank=WORLD_RANK, world_size=WORLD_SIZE
     )
+    print(f"Rank {torch.distributed.get_rank()} initialized, WORLD SIZE: {torch.distributed.get_world_size()}")
 
     # Encapsulate the model on the GPU assigned to the current process
     model = getattr(torchvision.models, argv.arch)(weights=None)
