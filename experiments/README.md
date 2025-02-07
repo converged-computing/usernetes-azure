@@ -1257,12 +1257,53 @@ launch.sh
 arch=resnet18
 ```
 ```
-flux run -N 2 -o pmi=pmix singularity exec --bind /tmp:/tmp --bind /opt/run/flux:/opt/run/flux --bind launch.sh:/opt/launch.sh --bind main.py:/opt/main.py /opt/usernetes-azure_resnet.sif /bin/bash /opt/launch.sh flux-user00000 2 96 2
+#backend=mpi
+flux run -N 1 -o cpu-affinity=per-task --tasks-per-node=1 -o mpi=none -o pmi=pmix singularity exec --bind /tmp:/tmp --bind /opt/run/flux:/opt/run/flux --bind launch.sh:/opt/launch.sh --bind main.py:/opt/main.py /opt/usernetes-azure_resnet.sif /bin/bash /opt/launch.sh flux-user00000 1 8 128
+Torchrun for lead node
+W0207 11:51:48.344000 133469446010688 torch/distributed/run.py:757] 
+W0207 11:51:48.344000 133469446010688 torch/distributed/run.py:757] *****************************************
+W0207 11:51:48.344000 133469446010688 torch/distributed/run.py:757] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0207 11:51:48.344000 133469446010688 torch/distributed/run.py:757] *****************************************
+Rank 0 initialized, WORLD SIZE: 1
+Rank 0 initialized, WORLD SIZE: 1
+Rank 0 initialized, WORLD SIZE: 1
+Rank 0 initialized, WORLD SIZE: 1
+Rank 0 initialized, WORLD SIZE: 1
+Rank 0 initialized, WORLD SIZE: 1
+Rank 0 initialized, WORLD SIZE: 1
+Rank 0 initialized, WORLD SIZE: 1
+epoch : 0.0000
+epoch : 0.0000
+epoch : 0.0000
+epoch : 0.0000
+epoch : 0.0000
+epoch : 0.0000
+epoch : 0.0000
+epoch : 0.0000
 
-[1738777207.198200] [flux-user000000:5072 :0]       tag_match.c:62   UCX  WARN  unexpected tag-receive descriptor 0x781ca000c640 was not matched
-[1738777207.198223] [flux-user000000:5072 :0]       tag_match.c:62   UCX  WARN  unexpected tag-receive descriptor 0x781ca000c580 was not matched
-[1738777207.198229] [flux-user000000:5072 :0]       tag_match.c:62   UCX  WARN  unexpected tag-receive descriptor 0x781ca000c4c0 was not matched
-
+#backend=gloo
+flux run -N 1 -o cpu-affinity=per-task --tasks-per-node=1 -o mpi=none -o pmi=pmix singularity exec --bind /tmp:/tmp --bind /opt/run/flux:/opt/run/flux --bind launch.sh:/opt/launch.sh --bind main.py:/opt/main.py /opt/usernetes-azure_resnet.sif /bin/bash /opt/launch.sh flux-user00000 1 8 128
+Torchrun for lead node
+W0207 11:52:25.138000 135745581799232 torch/distributed/run.py:757] 
+W0207 11:52:25.138000 135745581799232 torch/distributed/run.py:757] *****************************************
+W0207 11:52:25.138000 135745581799232 torch/distributed/run.py:757] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0207 11:52:25.138000 135745581799232 torch/distributed/run.py:757] *****************************************
+Rank 0 initialized, WORLD SIZE: 8
+Rank 1 initialized, WORLD SIZE: 8
+Rank 2 initialized, WORLD SIZE: 8
+Rank 3 initialized, WORLD SIZE: 8
+Rank 4 initialized, WORLD SIZE: 8
+Rank 5 initialized, WORLD SIZE: 8
+Rank 6 initialized, WORLD SIZE: 8
+Rank 7 initialized, WORLD SIZE: 8
+epoch : 0.0000
+epoch : 0.0000
+epoch : 0.0000
+epoch : 0.0000
+epoch : 0.0000
+epoch : 0.0000
+epoch : 0.0000
+epoch : 0.0000
 ```
 #### Usernetes
 TODO
