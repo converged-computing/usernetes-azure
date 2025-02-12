@@ -1,14 +1,19 @@
-job_name="${1:-flux-sample-}"
+#!/bin/bash 
+
+master_address="${1:-flux-user000000}"
 nodes="${2:-2}"
 proc_per_node="${3:-4}"
 batch_size="${4:-32}"
-dns_suffix="${5:-}"
+
+# Note that this isn't used, see main.py.
+# The pytorch dist automatically provides it
+world_size="${6:-1}"
 
 export LOCAL_RANK=${FLUX_TASK_RANK}
 export RANK=${LOCAL_RANK}
 export OMPI_COMM_WORLD_SIZE=$(nproc)
-export WORLD_SIZE=1
-export MASTER_ADDR=${job_name}0${dns_suffix}
+export WORLD_SIZE=${world_size}
+export MASTER_ADDR=${master_address}
 export BATCH_SIZE=$batch_size
 echo $MASTER_ADDR
 echo $FLUX_TASK_RANK
@@ -28,5 +33,5 @@ else
   torchrun \
   --nproc_per_node=${proc_per_node} --nnodes=${nodes} --node_rank=${LOCAL_RANK} \
   --master_addr=$MASTER_ADDR --master_port=8080 \
-  /opt/main.py \
+  /opt/main.py
 fi
