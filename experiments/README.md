@@ -1071,14 +1071,57 @@ export OMPI_MCA_osc=ucx
 
 #from performance study experiments
 time flux run --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 2 -n 64 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg.sif amg -n 256 256 128 -P 8 4 2 -problem 2
+Running with these driver parameters:
+  solver ID    = 3
+
+  Laplacian_27pt:
+    (Nx, Ny, Nz) = (2048, 1024, 256)
+    (Px, Py, Pz) = (8, 4, 2)
+
+=============================================
+Generate Matrix:
+=============================================
+Spatial Operator:
+  wall clock time = 3.000220 seconds
+  wall MFLOPS     = 0.000000
+  cpu clock time  = 8.478691 seconds
+  cpu MFLOPS      = 0.000000
+
+  RHS vector has unit components
+  Initial guess is 0
+=============================================
+IJ Vector Setup:
+=============================================
+RHS and Initial Guess:
+  wall clock time = 0.116649 seconds
+  wall MFLOPS     = 0.000000
+  cpu clock time  = 0.224480 seconds
+  cpu MFLOPS      = 0.000000
+
+=============================================
+Problem 2: Cumulative AMG-GMRES Solve Time:
+=============================================
+GMRES Solve:
+  wall clock time = 813.874858 seconds
+  wall MFLOPS     = 0.000000
+  cpu clock time  = 2412.747225 seconds
+  cpu MFLOPS      = 0.000000
+
+
+No. of Time Steps = 6
+Cum. No. of Iterations = 215
+Final Relative Residual Norm = 1.607252e-13
+
+
+nnz AP * (Iterations + time_steps) / Total Time: 
+
+Figure of Merit (FOM_2): 4.287041e+09
 
 
 
-
-
-time flux run --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 2 -n 8 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg.sif amg -n 256 256 128 -P 2 2 2 -problem 2
-
-
+real	13m40.343s
+user	0m0.077s
+sys	0m0.023s
 ```
 
 #### Usernetes
