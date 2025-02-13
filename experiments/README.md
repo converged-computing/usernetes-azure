@@ -1258,6 +1258,14 @@ container=/opt/usernetes-azure_pytorch.sif
 ```
 
 ```
+#1 node
+real	7m57.739s
+user	0m0.100s
+sys	0m0.047s
+time flux run -N 1 singularity exec --bind /tmp:/tmp --bind /opt/run/flux:/opt/run/flux --bind /opt/experiment/launch.sh --bind /opt/experiment/main.py $container /bin/bash /opt/experiment/launch.sh flux-user000000 1 $(nproc) 128
+samples_per_sec: 268.1390
+
+#2 nodes
 #real	8m2.749s
 user	0m0.096s
 sys	0m0.053s
@@ -1317,11 +1325,17 @@ flux exec -r 0,1 chmod +x /opt/experiment/main.py
 ```
 cd /opt/experiment
 
-#run 1
-real	14m14.501s
-user	0m0.085s
-sys	0m0.024s
-#run 2
+#1 node
+real	7m46.435s
+user	0m0.079s
+sys	0m0.023s
+time flux run -N 1 /opt/experiment/launch.sh flux-sample-0 1 $(nproc) 128
+samples_per_sec: 267.8348
+samples_per_sec: 268.4161
+samples_per_sec: 267.6725
+samples_per_sec: 269.5900
+
+#2 nodes
 real	15m20.375s
 user	0m0.073s
 sys	0m0.035s
