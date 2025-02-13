@@ -1236,7 +1236,7 @@ TODO
 #### Container pull
 ```
 cd /opt
-time flux exec -r 0,1 singularity pull docker://ghcr.io/converged-computing/usernetes-azure:resnet
+time flux exec -r 0,1 singularity pull docker://ghcr.io/converged-computing/usernetes-azure:pytorch
 
 real    7m1.034s
 user    0m0.008s
@@ -1253,6 +1253,8 @@ mkdir experiment
 cd experiment
 cp ../usernetes-azure/docker/resnet/main.py .
 cp ../usernetes-azure/docker/resnet/launch.sh .
+
+container=/opt/usernetes-azure_pytorch.sif
 ```
 
 ```
