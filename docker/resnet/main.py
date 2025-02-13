@@ -57,14 +57,14 @@ def evaluate(model, device, test_loader):
 
 
 def main():
-    num_epochs_default = 100
-    batch_size_default = 256
+    num_epochs_default = 5
+    batch_size_default = 128
     image_size_default = 224
     learning_rate_default = 0.1
     random_seed_default = 0
     model_dir_default = "saved_models"
     model_filename_default = "resnet_distributed.pth"
-    steps_syn_default = 20
+    steps_syn_default = 3
 
     # Each process runs on 1 GPU device specified by the local_rank argument.
     parser = argparse.ArgumentParser(
@@ -179,7 +179,7 @@ def main():
     device = torch.device("cpu")
     model = model.to(device)
     ddp_model = torch.nn.parallel.DistributedDataParallel(model)
-    
+
     if resume is True:
         map_location = torch.device("cpu")
         ddp_model.load_state_dict(torch.load(model_filepath, map_location=map_location))
@@ -204,10 +204,10 @@ def main():
         # Data should be prefetched
         # Download should be set to be False, because it is not multiprocess safe
         train_set = torchvision.datasets.CIFAR10(
-            root="data", train=True, download=False, transform=transform
+            root=f"./train_{rank}", train=True, download=True, transform=transform
         )
         test_set = torchvision.datasets.CIFAR10(
-            root="data", train=False, download=False, transform=transform
+            root=f"./test_{rank}", train=False, download=True, transform=transform
         )
 
         # Restricts data loading to a subset of the dataset exclusive to the current process
