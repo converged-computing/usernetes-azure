@@ -1266,7 +1266,74 @@ samples_per_sec: 532.8424
 ```
 
 #### Usernetes
-TODO
+minicluster.yaml
+```
+apiVersion: flux-framework.org/v1alpha2
+kind: MiniCluster
+metadata:
+  name: flux-sample
+spec:
+  size: 2
+  interactive: true
+  flux:
+    container:
+      disable: true
+  containers:
+    - image: ghcr.io/converged-computing/usernetes-azure:pytorch
+      volumes:
+        memory-dir:
+          emptyDir: true
+          emptyDirMedium: "memory"
+      securityContext:
+        privileged: true
+```
+
+Shell into the Usernetes container once the cluster is up:
+```
+kubectl apply -f minicluster.yaml
+kubectl get pods -o wide
+
+(  Normal  Pulling    7m26s  kubelet            Pulling image "ghcr.io/converged-computing/usernetes-azure:pytorch"
+  Normal  Pulled     2m19s  kubelet            Successfully pulled image "ghcr.io/converged-computing/usernetes-azure:pytorch" in 5m6.579s (5m6.579s including waiting). Image size: 7642462941 bytes.)
+
+kubectl exec -ti flux-sample-0-XXX -- /bin/bash
+export FLUX_URI=local:///mnt/flux/view/run/flux/local
+```
+Retreive the updated two files necessary for running resnet:
+```
+flux exec -r 0,1 git clone https://github.com/converged-computing/usernetes-azure
+flux exec -r 0,1 mkdir /opt/experiment
+cd experiment
+flux exec -r 0,1 cp /opt/usernetes-azure/docker/resnet/main.py .
+flux exec -r 0,1 cp /opt/usernetes-azure/docker/resnet/launch.sh .
+> modify launch.sh to have : MASTER_ADDR=${master}.flux-service.default.svc.cluster.local
+flux archive create --name launch --dir /opt/experiment/ launch.sh
+flux exec -r 1 flux archive extract --dir /opt/experiment/ --overwrite --name launch
+
+flux exec -r 0,1 chmod +x /opt/experiment/launch.sh 
+flux exec -r 0,1 chmod +x /opt/experiment/main.py
+```
+
+```
+cd /opt/experiment
+
+#run 1
+real	14m14.501s
+user	0m0.085s
+sys	0m0.024s
+#run 2
+real	15m20.375s
+user	0m0.073s
+sys	0m0.035s
+
+time flux run -N 2 /opt/experiment/launch.sh flux-sample-0 2 $(nproc) 128
+samples_per_sec: 515.7026
+samples_per_sec: 518.0394
+samples_per_sec: 520.0916
+samples_per_sec: 519.0018
+```
+
+
 ### Scale
 #### Bare metal
 TODO
