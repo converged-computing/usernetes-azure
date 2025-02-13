@@ -1,16 +1,10 @@
-job_name="${1:-flux-sample-}"
+master="${1:-flux-user000000}"
 nodes="${2:-2}"
-proc_per_node="${3:-4}"
-batch_size="${4:-32}"
-dns_suffix="${5:-}"
+proc_per_node="${3:-96}"
+batch_size="${4:-128}"
 
 export LOCAL_RANK=${FLUX_TASK_RANK}
-export RANK=-1
-#${FLUX_TASK_RANK}
-export WORLD_SIZE=-1
-#$((nodes * proc_per_node))
-#.flux-service.default.svc.cluster.local
-MASTER_ADDR=${job_name}0${dns_suffix}
+MASTER_ADDR=${master}
 
 if [[ "${FLUX_TASK_RANK}" == "0" ]]; then
   echo "Torchrun for lead node"
