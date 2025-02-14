@@ -1,0 +1,18 @@
+apiVersion: flux-framework.org/v1alpha2
+kind: MiniCluster
+metadata:
+  name: flux-sample
+spec:
+  size: 2
+  interactive: true
+  flux:
+    container:
+      disable: true
+  containers:
+    - image: ghcr.io/converged-computing/usernetes-azure:pytorch
+      volumes:
+        memory-dir:
+          emptyDir: true
+          emptyDirMedium: "memory"
+      securityContext:
+        privileged: true
