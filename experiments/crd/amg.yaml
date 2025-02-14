@@ -1,0 +1,25 @@
+apiVersion: flux-framework.org/v1alpha2
+kind: MiniCluster
+metadata:
+  name: flux-sample
+spec:
+  size: 2
+  interactive: true
+  flux:
+    container:
+      disable: true
+  containers:
+    - image: ghcr.io/converged-computing/usernetes-azure:amg
+      volumes:
+        memory-dir:
+          emptyDir: true
+          emptyDirMedium: "memory"
+      environment:
+        UCX_TLS: rc,sm
+	      OMPI_MCA_btl: ^vader,tcp,openib,uct
+	      OMPI_MCA_pml: ucx
+        UCX_NET_DEVICES: mlx5_0:1
+	      OMPI_MCA_spml: ucx
+	      OMPI_MCA_osc: ucx
+      securityContext:
+        privileged: true
