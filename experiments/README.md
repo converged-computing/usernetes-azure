@@ -1221,21 +1221,22 @@ samples_per_sec: 520.0916
 samples_per_sec: 519.0018
 ```
 
-#### MPI
+## RESNET MPI
+
+### Test (2 nodes)
+
+#### Container pull
 ```
-in main.py add:
+#This won't work for now, I was unsuccessful pushing the image...
+#use regular pytorch/resnet image and modify main.py to match the one from resnet-mpi
+cd /opt
+time flux exec -r 0,1 singularity pull docker://ghcr.io/converged-computing/usernetes-azure:pytorch-mpi
 
-#put all this where init_process_group originally is
-#for some reason the flux is necessary or it doesn't print...
-    LOCAL_RANK = int(os.environ["FLUX_TASK_LOCAL_ID"])
-    WORLD_SIZE = int(os.environ["FLUX_JOB_SIZE"])
-    WORLD_RANK = int(os.environ["FLUX_TASK_RANK"])
-
-    # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
-    torch.distributed.init_process_group(backend="mpi")
-    print(f"Rank {torch.distributed.get_rank()} initialized, WORLD SIZE: {torch.distributed.get_world_size()}", flush=True)
+real    7m1.034s
+user    0m0.008s
+sys     0m0.163s
 ```
-
+#### Bare metal
 ```
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
@@ -1259,7 +1260,10 @@ sys	0m0.090s
 time flux run -N2 -n 192 -o cpu-affinity=per-task singularity exec --bind /opt/usernetes-azure --bind /tmp --bind /dev/shm --bind /opt/run/flux --env LOCAL_RANK=0 /opt/usernetes-azure_pytorch.sif python /opt/usernetes-azure/docker/resnet/main.py --backend=mpi --use_syn --batch_size=128 --arch=resnet18
 samples_per_sec: 447.5474
 ```
+
+#### Usernetes
 ```
+#for now, use resnet.yaml until image is successfully pushed
 kubectl apply -f crd/resnet-mpi.yaml
 kubectl get pods -o wide
 
@@ -1268,6 +1272,34 @@ kubectl get pods -o wide
 
 kubectl exec -ti flux-sample-0-XXX -- /bin/bash
 export FLUX_URI=local:///mnt/flux/view/run/flux/local
+flux exec -r 0,1 git clone https://github.com/converged-computing/usernetes-azure
+```
+
+```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+export OMPI_MCA_spml=ucx
+export OMPI_MCA_osc=ucx
+
+#real	9m13.769s
+user	0m0.074s
+sys	0m0.030s
+time flux run -N1 -n 96 -o cpu-affinity=per-task python /opt/usernetes-azure/docker/resnet-mpi/main.py --backend=mpi --use_syn --batch_size=128 --arch=resnet18
+samples_per_sec: 222.2845
+samples_per_sec: 224.7697
+samples_per_sec: 224.9327
+samples_per_sec: 226.0100
+
+#real	9m21.389s
+user	0m0.071s
+sys	0m0.036s
+time flux run -N2 -n 192 -o cpu-affinity=per-task python /opt/usernetes-azure/docker/resnet-mpi/main.py --backend=mpi --use_syn --batch_size=128 --arch=resnet18
+samples_per_sec: 440.8316
+samples_per_sec: 443.3149
+samples_per_sec: 444.3847
+samples_per_sec: 446.0719
+
 ```
 
 ### Scale
