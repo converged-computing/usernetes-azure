@@ -1058,6 +1058,10 @@ export UCX_TLS=rc,sm
 export OMPI_MCA_btl=^vader,tcp,openib,uct
 export OMPI_MCA_spml=ucx
 export OMPI_MCA_osc=ucx
+
+#real    3m19.647s
+user    0m0.064s
+sys     0m0.038s
 time flux run --env OMP_NUM_THREADS=3 -N 2 --tasks-per-node=4 -o cpu-affinity=per-task amg -n 256 256 128 -P 2 2 2 -problem 2
 
 Running with these driver parameters:
@@ -1107,10 +1111,11 @@ nnz AP * (Iterations + time_steps) / Total Time:
 Figure of Merit (FOM_2): 2.199055e+09
 
 
+#
+time flux run --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 2 -n 64 -o cpu-affinity=per-task amg -n 256 256 128 -P 8 4 2 -problem 2
 
-real    3m19.647s
-user    0m0.064s
-sys     0m0.038s
+
+
 ```
 ### Scale
 #### Bare metal
@@ -1216,25 +1221,54 @@ samples_per_sec: 520.0916
 samples_per_sec: 519.0018
 ```
 
-Tries with MPI:
+#### MPI
 ```
 in main.py add:
 
-#this seems to work, the MPI warning gives correct rank and world size
-elif "FLUX_TASK_RANK" in os.environ:
-    # Environment variables set by flux
+#put all this where init_process_group originally is
+#for some reason the flux is necessary or it doesn't print...
     LOCAL_RANK = int(os.environ["FLUX_TASK_LOCAL_ID"])
     WORLD_SIZE = int(os.environ["FLUX_JOB_SIZE"])
     WORLD_RANK = int(os.environ["FLUX_TASK_RANK"])
-    print(f"WORLD: {WORLD_SIZE}")
 
+    # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
+    torch.distributed.init_process_group(backend="mpi")
+    print(f"Rank {torch.distributed.get_rank()} initialized, WORLD SIZE: {torch.distributed.get_world_size()}", flush=True)
 ```
 
 ```
-flux run -N1 -n5 singularity exec --bind /opt/usernetes-azure --bind /opt/run/flux /opt/usernetes-azure_pytorch.sif python /opt/usernetes-azure/docker/resnet/main.py --backend=mpi --use_syn --batch_size=128 --arch=resnet18
-#nothing happens, just hangs...
-```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+export OMPI_MCA_spml=ucx
+export OMPI_MCA_osc=ucx
 
+#real	9m15.529s
+user	0m0.095s
+sys	0m0.041s
+time flux run -N1 -n 96 -o cpu-affinity=per-task singularity exec --bind /opt/usernetes-azure --bind /tmp --bind /dev/shm --bind /opt/run/flux --env LOCAL_RANK=0 /opt/usernetes-azure_pytorch.sif python /opt/usernetes-azure/docker/resnet/main.py --backend=mpi --use_syn --batch_size=128 --arch=resnet18
+samples_per_sec: 224.8194
+samples_per_sec: 225.0790
+samples_per_sec: 226.6073
+samples_per_sec: 226.9088
+
+#does not work if LOCAL_RANK is not passed, but it is also reassigned in the python script so it doesnt matter which value we pass
+#real	9m20.726s
+user	0m0.127s
+sys	0m0.090s
+time flux run -N2 -n 192 -o cpu-affinity=per-task singularity exec --bind /opt/usernetes-azure --bind /tmp --bind /dev/shm --bind /opt/run/flux --env LOCAL_RANK=0 /opt/usernetes-azure_pytorch.sif python /opt/usernetes-azure/docker/resnet/main.py --backend=mpi --use_syn --batch_size=128 --arch=resnet18
+samples_per_sec: 447.5474
+```
+```
+kubectl apply -f crd/resnet-mpi.yaml
+kubectl get pods -o wide
+
+(  Normal  Pulling    7m26s  kubelet            Pulling image "ghcr.io/converged-computing/usernetes-azure:pytorch"
+  Normal  Pulled     2m19s  kubelet            Successfully pulled image "ghcr.io/converged-computing/usernetes-azure:pytorch" in 5m6.579s (5m6.579s including waiting). Image size: 7642462941 bytes.)
+
+kubectl exec -ti flux-sample-0-XXX -- /bin/bash
+export FLUX_URI=local:///mnt/flux/view/run/flux/local
+```
 
 ### Scale
 #### Bare metal
