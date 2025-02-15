@@ -158,38 +158,9 @@ sys     0m0.027s
 ```
 #### Usernetes
 
-Usernetes CRD for these tests:
-```
-apiVersion: flux-framework.org/v1alpha2
-kind: MiniCluster
-metadata:
-  name: flux-sample
-spec:
-  size: 2
-  interactive: true
-  flux:
-    container:
-      disable: true
-  containers:
-    - image: ghcr.io/converged-computing/usernetes-azure:osu
-      volumes:
-        memory-dir:
-          emptyDir: true
-          emptyDirMedium: "memory"
-      environment:
-        UCX_TLS: rc,sm
-	OMPI_MCA_btl: ^vader,tcp,openib,uct
-	OMPI_MCA_pml: ucx
-        UCX_NET_DEVICES: mlx5_0:1
-	OMPI_MCA_spml: ucx
-	OMPI_MCA_osc: ucx
-      securityContext:
-        privileged: true
-```
-
 Shell into the Usernetes container once the cluster is up:
 ```
-kubectl apply -f minicluster.yaml
+kubectl apply -f crd/osu.yaml
 
 (Pulling    2m6s   kubelet            Pulling image "ghcr.io/converged-computing/usernetes-azure:osu"
 Pulled     37s    kubelet            Successfully pulled image "ghcr.io/converged-computing/usernetes-azure:osu" in 1m29.121s (1m29.121s including waiting). Image size: 2164616929 bytes.)
@@ -636,38 +607,9 @@ sys	0m0.027s
 
 #### Usernetes
 
-Usernetes CRD for these tests:
-```
-apiVersion: flux-framework.org/v1alpha2
-kind: MiniCluster
-metadata:
-  name: flux-sample
-spec:
-  size: 2
-  interactive: true
-  flux:
-    container:
-      disable: true
-  containers:
-    - image: ghcr.io/converged-computing/usernetes-azure:lammps
-      volumes:
-        memory-dir:
-          emptyDir: true
-          emptyDirMedium: "memory"
-      environment:
-        UCX_TLS: rc,sm
-	OMPI_MCA_btl: ^vader,tcp,openib,uct
-	OMPI_MCA_pml: ucx
-        UCX_NET_DEVICES: mlx5_0:1
-	OMPI_MCA_spml: ucx
-	OMPI_MCA_osc: ucx
-      securityContext:
-        privileged: true
-```
-
 Shell into the Usernetes container once the cluster is up:
 ```
-kubectl apply -f minicluster.yaml
+kubectl apply -f crd/lammps.yaml
 
 (Pulling    3m1s   kubelet            Pulling image "ghcr.io/converged-computing/usernetes-azure:lammps"
 Pulled     2m45s  kubelet            Successfully pulled image "ghcr.io/converged-computing/usernetes-azure:lammps" in 15.026s (15.026s including waiting). Image size: 2103022386 bytes.)
@@ -901,38 +843,10 @@ Total Program Time: 1.34695
 ```
 #### Usernetes
 
-Usernetes CRD for these tests:
-```
-apiVersion: flux-framework.org/v1alpha2
-kind: MiniCluster
-metadata:
-  name: flux-sample
-spec:
-  size: 2
-  interactive: true
-  flux:
-    container:
-      disable: true
-  containers:
-    - image: ghcr.io/converged-computing/usernetes-azure:minife
-      volumes:
-        memory-dir:
-          emptyDir: true
-          emptyDirMedium: "memory"
-      environment:
-        UCX_TLS: rc,sm
-	OMPI_MCA_btl: ^vader,tcp,openib,uct
-	OMPI_MCA_pml: ucx
-        UCX_NET_DEVICES: mlx5_0:1
-	OMPI_MCA_spml: ucx
-	OMPI_MCA_osc: ucx
-      securityContext:
-        privileged: true
-```
 
 Shell into the Usernetes container once the cluster is up:
 ```
-kubectl apply -f minicluster.yaml
+kubectl apply -f crd/minife.yaml
 
 (Pulling    2m16s  kubelet            Pulling image "ghcr.io/converged-computing/usernetes-azure:minife"
 Normal  Pulled     2m14s  kubelet            Successfully pulled image "ghcr.io/converged-computing/usernetes-azure:minife" in 1.99s (1.99s including waiting). Image size: 1802286887 bytes.)
@@ -1126,38 +1040,9 @@ sys	0m0.023s
 
 #### Usernetes
 
-Usernetes CRD for these tests:
-```
-apiVersion: flux-framework.org/v1alpha2
-kind: MiniCluster
-metadata:
-  name: flux-sample
-spec:
-  size: 2
-  interactive: true
-  flux:
-    container:
-      disable: true
-  containers:
-    - image: ghcr.io/converged-computing/usernetes-azure:amg
-      volumes:
-        memory-dir:
-          emptyDir: true
-          emptyDirMedium: "memory"
-      environment:
-        UCX_TLS: rc,sm
-	OMPI_MCA_btl: ^vader,tcp,openib,uct
-	OMPI_MCA_pml: ucx
-        UCX_NET_DEVICES: mlx5_0:1
-	OMPI_MCA_spml: ucx
-	OMPI_MCA_osc: ucx
-      securityContext:
-        privileged: true
-```
-
 Shell into the Usernetes container once the cluster is up:
 ```
-kubectl apply -f minicluster.yaml
+kubectl apply -f crd/amg.yaml
 
 (Pulling    46s   kubelet            Pulling image "ghcr.io/converged-computing/usernetes-azure:amg"
   Normal  Pulled     44s   kubelet            Successfully pulled image "ghcr.io/converged-computing/usernetes-azure:amg" in 1.405s (1.405s including waiting). Image size: 1800886203 bytes.)
@@ -1168,6 +1053,11 @@ export FLUX_URI=local:///mnt/flux/view/run/flux/local
 
 ```
 #from performance study experiments
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+export OMPI_MCA_spml=ucx
+export OMPI_MCA_osc=ucx
 time flux run --env OMP_NUM_THREADS=3 -N 2 --tasks-per-node=4 -o cpu-affinity=per-task amg -n 256 256 128 -P 2 2 2 -problem 2
 
 Running with these driver parameters:
@@ -1274,31 +1164,10 @@ samples_per_sec: 532.8424
 ```
 
 #### Usernetes
-minicluster.yaml
-```
-apiVersion: flux-framework.org/v1alpha2
-kind: MiniCluster
-metadata:
-  name: flux-sample
-spec:
-  size: 2
-  interactive: true
-  flux:
-    container:
-      disable: true
-  containers:
-    - image: ghcr.io/converged-computing/usernetes-azure:pytorch
-      volumes:
-        memory-dir:
-          emptyDir: true
-          emptyDirMedium: "memory"
-      securityContext:
-        privileged: true
-```
 
 Shell into the Usernetes container once the cluster is up:
 ```
-kubectl apply -f minicluster.yaml
+kubectl apply -f crd/resnet.yaml
 kubectl get pods -o wide
 
 (  Normal  Pulling    7m26s  kubelet            Pulling image "ghcr.io/converged-computing/usernetes-azure:pytorch"
@@ -1345,6 +1214,25 @@ samples_per_sec: 515.7026
 samples_per_sec: 518.0394
 samples_per_sec: 520.0916
 samples_per_sec: 519.0018
+```
+
+Tries with MPI:
+```
+in main.py add:
+
+#this seems to work, the MPI warning gives correct rank and world size
+elif "FLUX_TASK_RANK" in os.environ:
+    # Environment variables set by flux
+    LOCAL_RANK = int(os.environ["FLUX_TASK_LOCAL_ID"])
+    WORLD_SIZE = int(os.environ["FLUX_JOB_SIZE"])
+    WORLD_RANK = int(os.environ["FLUX_TASK_RANK"])
+    print(f"WORLD: {WORLD_SIZE}")
+
+```
+
+```
+flux run -N1 -n5 singularity exec --bind /opt/usernetes-azure --bind /opt/run/flux /opt/usernetes-azure_pytorch.sif python /opt/usernetes-azure/docker/resnet/main.py --backend=mpi --use_syn --batch_size=128 --arch=resnet18
+#nothing happens, just hangs...
 ```
 
 
