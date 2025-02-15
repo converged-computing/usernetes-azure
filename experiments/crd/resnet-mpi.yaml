@@ -14,5 +14,12 @@ spec:
         memory-dir:
           emptyDir: true
           emptyDirMedium: "memory"
+      environment:
+        UCX_TLS: rc,sm
+	      OMPI_MCA_btl: ^vader,tcp,openib,uct
+	      OMPI_MCA_pml: ucx
+        UCX_NET_DEVICES: mlx5_0:1
+	      OMPI_MCA_spml: ucx
+	      OMPI_MCA_osc: ucx
       securityContext:
         privileged: true
