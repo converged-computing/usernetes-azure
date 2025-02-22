@@ -591,18 +591,10 @@ sys	0m0.086s
 ```
 
 ```
-#too long, runs for more than 13 minutes, but does not OOM
-time flux run -N 4 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS --env UCX_NET_DEVICES=mlx5_0:1 usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite
-
-^Cflux-job: one more ctrl-C within 2s to cancel or ctrl-Z to detach
-^C790.652s: job.exception type=cancel severity=0 interrupted by ctrl-C
-^C790.804s: job.exception type=cancel severity=0 interrupted by ctrl-C
-^C790.939s: job.exception type=cancel severity=0 interrupted by ctrl-C
-flux-job: task(s) Terminated
-
-real	13m11.273s
-user	0m0.077s
-sys	0m0.027s
+#real	2m16.995s
+user	0m0.071s
+sys	0m0.031s
+time flux run -N 2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS usernetes-azure_lammps.sif /usr/bin/lmp -v x 32 -v y 32 -v z 8 -in ./in.reaxff.hns -nocite
 ```
 
 #### Usernetes
@@ -710,8 +702,10 @@ sys     0m0.027s
 ```
 #from performance study experiments
 time flux run -N 2 --tasks-per-node=96 -o cpu-affinity=per-task /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite
-
  1984.637562] Out of memory: Killed process 16060 (lmp) total-vm:9388380kB, anon-rss:5008112kB, file-rss:9984kB, shmem-rss:20736kB, UID:1000 pgtables:10528kB oom_score_adj:1000
+```
+```
+time flux run -N 2 --tasks-per-node=96 -o cpu-affinity=per-task /usr/bin/lmp -v x 32 -v y 32 -v z 8 -in ./in.reaxff.hns -nocite
 ```
 
 
