@@ -1031,8 +1031,6 @@ nnz AP * (Iterations + time_steps) / Total Time:
 
 Figure of Merit (FOM_2): 4.287041e+09
 
-
-
 real	13m40.343s
 user	0m0.077s
 sys	0m0.023s
@@ -1050,7 +1048,6 @@ kubectl apply -f crd/amg.yaml
 kubectl exec -ti flux-sample-0-XXX -- /bin/bash
 export FLUX_URI=local:///mnt/flux/view/run/flux/local
 ```
-
 ```
 #from performance study experiments
 export OMPI_MCA_pml=ucx
@@ -1109,19 +1106,114 @@ Final Relative Residual Norm = 3.895199e-14
 nnz AP * (Iterations + time_steps) / Total Time: 
 
 Figure of Merit (FOM_2): 2.199055e+09
-
-
-#
-time flux run --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 2 -n 64 -o cpu-affinity=per-task amg -n 256 256 128 -P 8 4 2 -problem 2
-
-
-
 ```
 ### Scale
 #### Bare metal
 TODO
 #### Usernetes
 TODO
+
+
+## AMG2023
+
+### Test (2 nodes)
+
+#### Container pull
+```
+cd /opt
+time flux exec -r all singularity pull docker://ghcr.io/converged-computing/usernetes-azure:amg2023
+real	2m15.967s
+user	0m0.012s
+sys	0m0.005s
+```
+
+#### Bare metal
+```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+export OMPI_MCA_spml=ucx
+export OMPI_MCA_osc=ucx
+
+#real	0m54.587s
+user	0m0.076s
+sys	0m0.021s
+time flux run --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 2 -n 64 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 8 4 2 -problem 2
+Running with these driver parameters:
+  Problem ID    = 2
+
+=============================================
+Hypre init times:
+=============================================
+Hypre init:
+  wall clock time = 0.002488 seconds
+  Laplacian_7pt:
+    (Nx, Ny, Nz) = (2048, 1024, 256)
+    (Px, Py, Pz) = (8, 4, 2)
+
+=============================================
+Generate Matrix:
+=============================================
+Spatial Operator:
+  wall clock time = 1.046138 seconds
+  RHS vector has unit components
+  Initial guess is 0
+=============================================
+IJ Vector Setup:
+=============================================
+RHS and Initial Guess:
+  wall clock time = 0.069057 seconds
+=============================================
+Problem 2: AMG Setup Time:
+=============================================
+PCG Setup:
+  wall clock time = 32.242117 seconds
+
+FOM_Setup: nnz_AP / Setup Phase Time: 2.010611e+08
+
+=============================================
+Problem 2: AMG-PCG Solve Time:
+=============================================
+PCG Solve:
+  wall clock time = 19.244267 seconds
+
+Iterations = 22
+Final Relative Residual Norm = 3.610765e-09
+FOM_Solve: nnz_AP * iterations / Solve Phase Time: 3.368605e+08
+Figure of Merit (FOM): nnz_AP / (Setup Phase Time + 3 * Solve Phase Time) 7.204935e+07
+
+```
+
+#### Usernetes
+
+Shell into the Usernetes container once the cluster is up:
+```
+kubectl apply -f crd/amg.yaml
+
+(Pulling    46s   kubelet            Pulling image "ghcr.io/converged-computing/usernetes-azure:amg"
+  Normal  Pulled     44s   kubelet            Successfully pulled image "ghcr.io/converged-computing/usernetes-azure:amg" in 1.405s (1.405s including waiting). Image size: 1800886203 bytes.)
+
+kubectl exec -ti flux-sample-0-XXX -- /bin/bash
+export FLUX_URI=local:///mnt/flux/view/run/flux/local
+```
+
+```
+#from performance study experiments
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+export OMPI_MCA_spml=ucx
+export OMPI_MCA_osc=ucx
+
+
+time flux run --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 2 -n 64 -o cpu-affinity=per-task amg -n 256 256 128 -P 8 4 2 -problem 2
+```
+### Scale
+#### Bare metal
+TODO
+#### Usernetes
+TODO
+
 
 
 ## RESNET
