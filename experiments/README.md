@@ -1190,23 +1190,60 @@ Shell into the Usernetes container once the cluster is up:
 ```
 kubectl apply -f crd/amg.yaml
 
-(Pulling    46s   kubelet            Pulling image "ghcr.io/converged-computing/usernetes-azure:amg"
-  Normal  Pulled     44s   kubelet            Successfully pulled image "ghcr.io/converged-computing/usernetes-azure:amg" in 1.405s (1.405s including waiting). Image size: 1800886203 bytes.)
+(Pulling    2m7s   kubelet            Pulling image "ghcr.io/converged-computing/usernetes-azure:amg2023"
+  Normal  Pulled     44s    kubelet            Successfully pulled image "ghcr.io/converged-computing/usernetes-azure:amg2023" in 1m23.57s (1m23.57s including waiting). Image size: 2053770085 bytes.)
 
 kubectl exec -ti flux-sample-0-XXX -- /bin/bash
 export FLUX_URI=local:///mnt/flux/view/run/flux/local
 ```
 
 ```
-#from performance study experiments
-export OMPI_MCA_pml=ucx
-export UCX_TLS=rc,sm
-export OMPI_MCA_btl=^vader,tcp,openib,uct
-export OMPI_MCA_spml=ucx
-export OMPI_MCA_osc=ucx
-
-
+#real	0m54.427s
+user	0m0.074s
+sys	0m0.028s
 time flux run --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 2 -n 64 -o cpu-affinity=per-task amg -n 256 256 128 -P 8 4 2 -problem 2
+Running with these driver parameters:
+  Problem ID    = 2
+
+=============================================
+Hypre init times:
+=============================================
+Hypre init:
+  wall clock time = 0.000009 seconds
+  Laplacian_7pt:
+    (Nx, Ny, Nz) = (2048, 1024, 256)
+    (Px, Py, Pz) = (8, 4, 2)
+
+=============================================
+Generate Matrix:
+=============================================
+Spatial Operator:
+  wall clock time = 1.041354 seconds
+  RHS vector has unit components
+  Initial guess is 0
+=============================================
+IJ Vector Setup:
+=============================================
+RHS and Initial Guess:
+  wall clock time = 0.069725 seconds
+=============================================
+Problem 2: AMG Setup Time:
+=============================================
+PCG Setup:
+  wall clock time = 32.574849 seconds
+
+FOM_Setup: nnz_AP / Setup Phase Time: 1.990073e+08
+
+=============================================
+Problem 2: AMG-PCG Solve Time:
+=============================================
+PCG Solve:
+  wall clock time = 19.242726 seconds
+
+Iterations = 22
+Final Relative Residual Norm = 3.610765e-09
+FOM_Solve: nnz_AP * iterations / Solve Phase Time: 3.368875e+08
+Figure of Merit (FOM): nnz_AP / (Setup Phase Time + 3 * Solve Phase Time) 7.178756e+07
 ```
 ### Scale
 #### Bare metal
