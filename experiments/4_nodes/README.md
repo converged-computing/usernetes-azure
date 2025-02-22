@@ -162,6 +162,58 @@ Total wall time: 0:01:13
 ## AMG 2023
 ### Bare metal 
 ```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+export OMPI_MCA_spml=ucx
+export OMPI_MCA_osc=ucx
+
+#real	0m56.021s
+user	0m0.076s
+sys	0m0.025s
+time flux run --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 4 -n 128 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 8 8 2 -problem 2
+Running with these driver parameters:
+  Problem ID    = 2
+
+=============================================
+Hypre init times:
+=============================================
+Hypre init:
+  wall clock time = 0.002653 seconds
+  Laplacian_7pt:
+    (Nx, Ny, Nz) = (2048, 2048, 256)
+    (Px, Py, Pz) = (8, 8, 2)
+
+=============================================
+Generate Matrix:
+=============================================
+Spatial Operator:
+  wall clock time = 1.123729 seconds
+  RHS vector has unit components
+  Initial guess is 0
+=============================================
+IJ Vector Setup:
+=============================================
+RHS and Initial Guess:
+  wall clock time = 0.069868 seconds
+=============================================
+Problem 2: AMG Setup Time:
+=============================================
+PCG Setup:
+  wall clock time = 34.791758 seconds
+
+FOM_Setup: nnz_AP / Setup Phase Time: 3.727079e+08
+
+=============================================
+Problem 2: AMG-PCG Solve Time:
+=============================================
+PCG Solve:
+  wall clock time = 19.264474 seconds
+
+Iterations = 22
+Final Relative Residual Norm = 4.265372e-09
+FOM_Solve: nnz_AP * iterations / Solve Phase Time: 6.731127e+08
+Figure of Merit (FOM): nnz_AP / (Setup Phase Time + 3 * Solve Phase Time) 1.400566e+08
 
 ```
 ### Usernetes
@@ -170,5 +222,113 @@ Total wall time: 0:01:13
 ```
 ## MiniFE
 ### Bare metal 
+```
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+export OMPI_MCA_spml=ucx
+export OMPI_MCA_osc=ucx
 
+#real	0m7.573s
+user	0m0.085s
+sys	0m0.021s
+time flux run -N4 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec --bind /opt:/opt /opt/usernetes-azure_minife.sif miniFE.x nx=230 ny=230 nz=230 use_locking=1 elem_group_size=10 use_elem_mat_fields=300 verify_solution=0
+MiniFE Mini-App, OpenMP Peer Implementation
+Creating OpenMP Thread Pool...
+Counted: 384 threads.
+Running MiniFE Mini-App...
+      creating/filling mesh...0.056628s, total time: 0.056628
+generating matrix structure...0.0331519s, total time: 0.0897799
+         assembling FE data...0.061553s, total time: 0.151333
+      imposing Dirichlet BC...0.010272s, total time: 0.161605
+      imposing Dirichlet BC...0.000727177s, total time: 0.162332
+making matrix indices local...0.0952201s, total time: 0.257552
+Starting CG solver ... 
+Initial Residual = 231.002
+Iteration = 20   Residual = 0.121724
+Iteration = 40   Residual = 0.0251405
+Iteration = 60   Residual = 0.015028
+Iteration = 80   Residual = 0.0100868
+Iteration = 100   Residual = 0.00715833
+Iteration = 120   Residual = 0.0387415
+Iteration = 140   Residual = 0.00387161
+Iteration = 160   Residual = 0.00277456
+Iteration = 180   Residual = 0.00196057
+Iteration = 200   Residual = 0.00137808
+Final Resid Norm: 0.00137808
+
+real	0m7.573s
+user	0m0.085s
+sys	0m0.021s
+
+cat miniFE.230x230x230.P384.T1.2025\:02\:22-11\:28\:14.yaml
+
+Mini-Application Name: miniFE
+Mini-Application Version: 2.0
+Global Run Parameters: 
+  dimensions: 
+    nx: 230
+    ny: 230
+    nz: 230
+  load_imbalance: 0
+  mv_overlap_comm_comp: 0 (no)
+  OpenMP Max Threads:: 1
+  number of processors: 384
+  ScalarType: double
+  GlobalOrdinalType: int
+  LocalOrdinalType: int
+Platform: 
+  hostname: buildkitsandbox
+  kernel name: 'Linux'
+  kernel release: '6.8.0-1017-azure'
+  processor: 'x86_64'
+Build: 
+  CXX: '/usr/local/bin/mpicxx'
+  compiler version: 'g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0'
+  CXXFLAGS: '-O3 -fopenmp'
+  using MPI: yes
+Run Date/Time: 2025-02-22, 11-28-13
+Rows-per-proc Load Imbalance: 
+  Largest (from avg, %): 6.17046
+  Std Dev (%): 2.79606
+Matrix structure generation: 
+  Mat-struc-gen Time: 0.0331519
+FE assembly: 
+  FE assembly Time: 0.061553
+Matrix attributes: 
+  Global Nrows: 12326391
+  Global NNZ: 329939371
+  Global Memory (GB): 3.7792
+  Pll Memory Overhead (MB): 25.4045
+  Rows per proc MIN: 29792
+  Rows per proc MAX: 33640
+  Rows per proc AVG: 32100
+  NNZ per proc MIN: 804384
+  NNZ per proc MAX: 908280
+  NNZ per proc AVG: 859217
+CG solve: 
+  Iterations: 200
+  Final Resid Norm: 0.00137808
+  WAXPY Time: 0.0185571
+  WAXPY Flops: 2.19736e+10
+  WAXPY Mflops: 1.18411e+06
+  DOT Time: 0.177008
+  DOT Flops: 9.7336e+09
+  DOT Mflops: 54989.5
+  MATVEC Time: 0.168564
+  MATVEC Flops: 1.32636e+11
+  MATVEC Mflops: 786857
+  Total: 
+    Total CG Time: 0.36647
+    Total CG Flops: 1.64343e+11
+    Total CG Mflops: 448448
+  Time per iteration: 0.00183235
+Global All-RSS (kB): 51540580
+Global Max-RSS (kB): 145420
+Total Program Time: 0.93045
+
+```
 ### Usernetes
+```
+
+```
