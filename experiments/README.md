@@ -1,5 +1,37 @@
 # Experiments
 
+### Scale experiments actions
+- launch 32 node cluster
+- prepull all containers (osu, lammps, amg, minife)
+- create save.sh
+- oras login ghcr.io --username lisejolicoeur
+- launch benchmarks in order with oras push at the end of each
+- create Usernetes cluster
+- launch benchmarks for each
+
+save.sh
+```
+#!/bin/bash
+output=$1
+
+# When they are done:
+for jobid in $(flux jobs -a --json | jq -r .jobs[].id)
+  do
+    # Get the job study id
+    study_id=$(flux job info $jobid jobspec | jq -r ".attributes.user.study_id")    
+    if [[ -f "$output/${study_id}-${jobid}.out" ]] || [[ "$study_id" == "null" ]]; then
+        continue
+    fi
+    echo "Parsing jobid ${jobid} and study id ${study_id}"
+    flux job attach $jobid &> $output/${study_id}-${jobid}.out 
+    echo "START OF JOBSPEC" >> $output/${study_id}-${jobid}.out 
+    flux job info $jobid jobspec >> $output/${study_id}-${jobid}.out 
+    echo "START OF EVENTLOG" >> $output/${study_id}-${jobid}.out 
+    flux job info $jobid guest.exec.eventlog >> $output/${study_id}-${jobid}.out
+done
+```
+
+
 ## OSU
 
 ### Test (2 nodes)
@@ -282,53 +314,9 @@ sys     0m0.029s
 #### Bare metal
 ```
 oras login ghcr.io --username lisejolicoeur
-app=osu_latency
-
-export OMPI_MCA_pml=ucx
-export UCX_TLS=rc,sm
-export OMPI_MCA_btl=^vader,tcp,openib,uct
-OMPI_MCA_spml=ucx
-OMPI_MCA_osc=ucx
-
-for ((i=1; i<=20; i++)); do 
-	flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
-	flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
-	flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
-	flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
-	flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
-done
-
-
-./save.sh $output
-oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$app $output
-```
-
-```
-oras login ghcr.io --username lisejolicoeur
-app=osu_bw
-
-export OMPI_MCA_pml=ucx
-export UCX_TLS=rc,sm
-export OMPI_MCA_btl=^vader,tcp,openib,uct
-OMPI_MCA_spml=ucx
-OMPI_MCA_osc=ucx
-
-for ((i=1; i<=20; i++)); do 
-	flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
-	flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
-	flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
-	flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
-	flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
-done
-
-./save.sh $output
-oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$app $output
-
-```
-
-```
-oras login ghcr.io --username lisejolicoeur
 app=osu_barrier
+output=./results/$app
+mkdir -p $output
 
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
@@ -336,12 +324,11 @@ export OMPI_MCA_btl=^vader,tcp,openib,uct
 OMPI_MCA_spml=ucx
 OMPI_MCA_osc=ucx
 
-for ((i=1; i<=20; i++)); do 
-        flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
-        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
-        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
-        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
-        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
+for ((i=1; i<=5; i++)); do 
+        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
+        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
+        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
+        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
 done
 
 ./save.sh $output
@@ -351,6 +338,8 @@ oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$ap
 ```
 oras login ghcr.io --username lisejolicoeur
 app=osu_allreduce
+output=./results/$app
+mkdir -p $output
 
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
@@ -358,12 +347,11 @@ export OMPI_MCA_btl=^vader,tcp,openib,uct
 OMPI_MCA_spml=ucx
 OMPI_MCA_osc=ucx
 
-for ((i=1; i<=20; i++)); do 
-        flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
-        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
-        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
-        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
-        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec /opt/flux-tutorials_azure-2404-osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
+for ((i=1; i<=5; i++)); do 
+        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
+        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
+        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
+        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
 done
 
 ./save.sh $output
@@ -375,53 +363,9 @@ oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$ap
 
 ```
 oras login ghcr.io --username lisejolicoeur
-app=osu_latency
-
-export OMPI_MCA_pml=ucx
-export UCX_TLS=rc,sm
-export OMPI_MCA_btl=^vader,tcp,openib,uct
-OMPI_MCA_spml=ucx
-OMPI_MCA_osc=ucx
-
-for ((i=1; i<=20; i++)); do 
-	flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
-	flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
-	flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
-	flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
-	flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency;
-done
-
-
-./save.sh $output
-oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-$app $output
-```
-
-```
-oras login ghcr.io --username lisejolicoeur
-app=osu_bw
-
-export OMPI_MCA_pml=ucx
-export UCX_TLS=rc,sm
-export OMPI_MCA_btl=^vader,tcp,openib,uct
-OMPI_MCA_spml=ucx
-OMPI_MCA_osc=ucx
-
-for ((i=1; i<=20; i++)); do 
-	flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
-	flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
-	flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
-	flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
-	flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_bw;
-done
-
-./save.sh $output
-oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-$app $output
-
-```
-
-```
-oras login ghcr.io --username lisejolicoeur
 app=osu_barrier
+output=./results/$app
+mkdir -p $output
 
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
@@ -429,11 +373,10 @@ export OMPI_MCA_btl=^vader,tcp,openib,uct
 OMPI_MCA_spml=ucx
 OMPI_MCA_osc=ucx
 
-for ((i=1; i<=20; i++)); do 
-        flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
-        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
-        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
-        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
+for ((i=1; i<=5; i++)); do 
+        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-4] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
+        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-8] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
+        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-16] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
         flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier; 
 done
 
@@ -444,6 +387,8 @@ oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernete
 ```
 oras login ghcr.io --username lisejolicoeur
 app=osu_allreduce
+output=./results/$app
+mkdir -p $output
 
 export OMPI_MCA_pml=ucx
 export UCX_TLS=rc,sm
@@ -451,11 +396,10 @@ export OMPI_MCA_btl=^vader,tcp,openib,uct
 OMPI_MCA_spml=ucx
 OMPI_MCA_osc=ucx
 
-for ((i=1; i<=20; i++)); do 
-        flux run -N 2 --tasks-per-node=96 --setattr=user.study_id=$app-2-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000002] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
-        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
-        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
-        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
+for ((i=1; i<=5; i++)); do 
+        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-4] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
+        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-8] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
+        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-16] /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
         flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task /opt/osu-benchmark/build.openmpi/mpi/collective/osu_allreduce;
 done
 
@@ -711,9 +655,53 @@ time flux run -N 2 --tasks-per-node=96 -o cpu-affinity=per-task /usr/bin/lmp -v 
 
 ### Scale
 #### Bare metal
-TODO
+```
+oras login ghcr.io --username lisejolicoeur
+app=lammps
+output=./results/$app
+mkdir -p $output
+
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
+
+for ((i=1; i<=5; i++)); do 
+        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite;
+        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite; 
+        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite; 
+        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite; 
+done
+
+./save.sh $output
+oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$app $output
+```
+
 #### Usernetes
-TODO
+```
+oras login ghcr.io --username lisejolicoeur
+app=lammps
+output=./results/$app
+mkdir -p $output
+
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
+
+for ((i=1; i<=5; i++)); do 
+        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-4] /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite;
+        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-8] /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite; 
+        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-16] /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite; 
+        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite; 
+done
+
+./save.sh $output
+oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-$app $output
+```
+
 
 
 ## MiniFE
@@ -950,9 +938,51 @@ Total Program Time: 1.35242
 
 ### Scale
 #### Bare metal
-TODO
+```
+oras login ghcr.io --username lisejolicoeur
+app=minife
+output=./results/$app
+mkdir -p $output
+
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
+
+for ((i=1; i<=5; i++)); do 
+        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] singularity exec --bind /opt:/opt /opt/usernetes-azure_minife.sif miniFE.x nx=230 ny=230 nz=230 use_locking=1 elem_group_size=10 use_elem_mat_fields=300 verify_solution=0;
+        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] singularity exec --bind /opt:/opt /opt/usernetes-azure_minife.sif miniFE.x nx=230 ny=230 nz=230 use_locking=1 elem_group_size=10 use_elem_mat_fields=300 verify_solution=0; 
+        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G singularity exec --bind /opt:/opt /opt/usernetes-azure_minife.sif miniFE.x nx=230 ny=230 nz=230 use_locking=1 elem_group_size=10 use_elem_mat_fields=300 verify_solution=0; 
+        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec --bind /opt:/opt /opt/usernetes-azure_minife.sif miniFE.x nx=230 ny=230 nz=230 use_locking=1 elem_group_size=10 use_elem_mat_fields=300 verify_solution=0; 
+done
+
+./save.sh $output
+oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$app $output
+```
 #### Usernetes
-TODO
+```
+oras login ghcr.io --username lisejolicoeur
+app=lammps
+output=./results/$app
+mkdir -p $output
+
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
+
+for ((i=1; i<=5; i++)); do 
+        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-4] miniFE.x nx=230 ny=230 nz=230 use_locking=1 elem_group_size=10 use_elem_mat_fields=300 verify_solution=0;
+        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-8] miniFE.x nx=230 ny=230 nz=230 use_locking=1 elem_group_size=10 use_elem_mat_fields=300 verify_solution=0; 
+        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-16] miniFE.x nx=230 ny=230 nz=230 use_locking=1 elem_group_size=10 use_elem_mat_fields=300 verify_solution=0; 
+        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task miniFE.x nx=230 ny=230 nz=230 use_locking=1 elem_group_size=10 use_elem_mat_fields=300 verify_solution=0; 
+done
+
+./save.sh $output
+oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-$app $output
+```
 
 
 ## AMG
@@ -1101,12 +1131,6 @@ nnz AP * (Iterations + time_steps) / Total Time:
 
 Figure of Merit (FOM_2): 2.199055e+09
 ```
-### Scale
-#### Bare metal
-TODO
-#### Usernetes
-TODO
-
 
 ## AMG2023
 
@@ -1241,10 +1265,51 @@ Figure of Merit (FOM): nnz_AP / (Setup Phase Time + 3 * Solve Phase Time) 7.1787
 ```
 ### Scale
 #### Bare metal
-TODO
-#### Usernetes
-TODO
+```
+oras login ghcr.io --username lisejolicoeur
+app=amg
+output=./results/$app
+mkdir -p $output
 
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
+
+for ((i=1; i<=5; i++)); do 
+        flux run --setattr=user.study_id=$app-4-iter-$i --requires=hosts:flux-user[000001-000004] --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 4 -n 128 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 8 8 2 -problem 2;
+	flux run --setattr=user.study_id=$app-8-iter-$i --requires=hosts:flux-user[000001-000008] --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 8 -n 256 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 8 8 4 -problem 2;
+	flux run --setattr=user.study_id=$app-16-iter-$i --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 16 -n 512 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 8 8 8 -problem 2;
+	flux run --setattr=user.study_id=$app-32-iter-$i --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 32 -n 1024 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 16 8 8 -problem 2;
+done
+
+./save.sh $output
+oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$app $output
+```
+#### Usernetes
+```
+oras login ghcr.io --username lisejolicoeur
+app=amg
+output=./results/$app
+mkdir -p $output
+
+export OMPI_MCA_pml=ucx
+export UCX_TLS=rc,sm
+export OMPI_MCA_btl=^vader,tcp,openib,uct
+OMPI_MCA_spml=ucx
+OMPI_MCA_osc=ucx
+
+for ((i=1; i<=5; i++)); do 
+        flux run --setattr=user.study_id=$app-4-iter-$i --requires=hosts:flux-sample[1-4] --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 4 -n 128 -o cpu-affinity=per-task amg -n 256 256 128 -P 8 8 2 -problem 2;
+	flux run --setattr=user.study_id=$app-8-iter-$i --requires=hosts:flux-sample[1-8] --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 8 -n 256 -o cpu-affinity=per-task amg -n 256 256 128 -P 8 8 4 -problem 2;
+	flux run --setattr=user.study_id=$app-16-iter-$i --requires=hosts:flux-sample[1-16] --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 16 -n 512 -o cpu-affinity=per-task amg -n 256 256 128 -P 8 8 8 -problem 2;
+	flux run --setattr=user.study_id=$app-32-iter-$i --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 32 -n 1024 -o cpu-affinity=per-task amg -n 256 256 128 -P 16 8 8 -problem 2;
+done
+
+./save.sh $output
+oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-$app $output
+```
 
 
 ## RESNET
@@ -1424,9 +1489,3 @@ samples_per_sec: 444.3847
 samples_per_sec: 446.0719
 
 ```
-
-### Scale
-#### Bare metal
-TODO
-#### Usernetes
-TODO
