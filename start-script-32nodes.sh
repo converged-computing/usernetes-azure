@@ -4,7 +4,15 @@ template_name="flux-user"
 template_username="azureuser"
 # Assume a huge number. This will error with Azure because they 
 # eventually dive into alpha numeric, but this works for a small demo
-NODELIST=${template_name}000[000-009],${template_name}00000A,${template_name}00000B,${template_name}00000C,${template_name}00000D,${template_name}00000E,${template_name}00000F,${template_name}00000G
+NODELIST=${template_name}000[000-009],${template_name}00000A,${template_name}00000B, \
+   ${template_name}00000C,${template_name}00000D,${template_name}00000E, \
+   ${template_name}00000F,${template_name}00000G,${template_name}00000H, \
+   ${template_name}00000I,${template_name}00000J,${template_name}00000K, \
+   ${template_name}00000L,${template_name}00000M,${template_name}00000N, \
+   ${template_name}00000O,${template_name}00000P,${template_name}00000Q, \
+   ${template_name}00000R,${template_name}00000S,${template_name}00000T, \
+   ${template_name}00000U,${template_name}00000V,${template_name}00000W
+
 
 lead_broker=${template_name}000000
 
