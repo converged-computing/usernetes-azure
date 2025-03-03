@@ -810,9 +810,90 @@ user    0m0.073s
 sys     0m0.027s
 ```
 ```
-#from performance study experiments
-time flux run -N 2 --tasks-per-node=96 -o cpu-affinity=per-task /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite
- 1984.637562] Out of memory: Killed process 16060 (lmp) total-vm:9388380kB, anon-rss:5008112kB, file-rss:9984kB, shmem-rss:20736kB, UID:1000 pgtables:10528kB oom_score_adj:1000
+#real	8m20.674s
+user	0m0.077s
+sys	0m0.030s
+time flux run -N 4 --tasks-per-node=96 -o cpu-affinity=per-task /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite
+LAMMPS (17 Apr 2024 - Development - a8687b5)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+Reading data file ...
+  triclinic box = (0 0 0) to (22.326 11.1412 13.778966) with tilt (0 -5.02603 0)
+  8 by 6 by 8 MPI processor grid
+  reading atoms ...
+  304 atoms
+  reading velocities ...
+  304 velocities
+  read_data CPU = 0.358 seconds
+Replication is creating a 64x32x32 = 65536 times larger system...
+  triclinic box = (0 0 0) to (1428.864 356.5184 440.92691) with tilt (0 -160.83296 0)
+  16 by 4 by 6 MPI processor grid
+  bounding box image = (0 -1 -1) to (0 1 1)
+  bounding box extra memory = 0.03 MB
+  average # of replicas added to proc = 336.76 out of 65536 (0.51%)
+  19922944 atoms
+  replicate CPU = 0.106 seconds
+Neighbor list info ...
+  update: every = 20 steps, delay = 0 steps, check = no
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 11
+  ghost atom cutoff = 11
+  binsize = 5.5, bins = 290 65 81
+  2 neighbor lists, perpetual/occasional/extra = 2 0 0
+  (1) pair reaxff, perpetual
+      attributes: half, newton off, ghost
+      pair build: half/bin/ghost/newtoff
+      stencil: full/ghost/bin/3d
+      bin: standard
+  (2) fix qeq/reax, perpetual, copy from (1)
+      attributes: half, newton off
+      pair build: copy
+      stencil: none
+      bin: none
+Setting up Verlet run ...
+  Unit style    : real
+  Current step  : 0
+  Time step     : 0.1
+Per MPI rank memory allocation (min/avg/max) = 1847 | 1853 | 1859 Mbytes
+   Step          Temp          PotEng         Press          E_vdwl         E_coul         Volume    
+         0   300           -113.27833      439.02035     -111.57687     -1.7014647      2.2461536e+08
+        10   300.76787     -113.28045      806.9458      -111.57901     -1.7014353      2.2461536e+08
+        20   302.41893     -113.28523      1697.8505     -111.5839      -1.701324       2.2461536e+08
+        30   302.57545     -113.28557      4298.4964     -111.58447     -1.7010952      2.2461536e+08
+        40   300.64331     -113.27974      6396.8071     -111.57897     -1.7007683      2.2461536e+08
+        50   297.45504     -113.27019      6484.7256     -111.56979     -1.7004027      2.2461536e+08
+        60   294.75203     -113.26209      6200.4902     -111.56205     -1.7000332      2.2461536e+08
+        70   294.65378     -113.26175      6838.3808     -111.56209     -1.6996571      2.2461536e+08
+        80   297.75343     -113.27097      8234.8411     -111.57169     -1.6992793      2.2461536e+08
+        90   301.65876     -113.28261      9374.4735     -111.58366     -1.6989423      2.2461536e+08
+       100   302.57974     -113.2853       10365.474     -111.5866      -1.6986993      2.2461536e+08
+Loop time of 486.293 on 384 procs for 100 steps with 19922944 atoms
+
+Performance: 0.002 ns/day, 13508.138 hours/ns, 0.206 timesteps/s, 4.097 Matom-step/s
+99.9% CPU use with 384 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 276.23     | 289.49     | 302.65     |  31.0 | 59.53
+Neigh   | 2.9643     | 3.0405     | 3.1477     |   2.1 |  0.63
+Comm    | 0.99824    | 12.412     | 26.624     | 143.9 |  2.55
+Output  | 0.034299   | 0.40063    | 1.2512     |  44.5 |  0.08
+Modify  | 179.22     | 180.92     | 183.98     |  10.4 | 37.20
+Other   |            | 0.03343    |            |       |  0.01
+
+Nlocal:        51882.7 ave       52023 max       51763 min
+Histogram: 90 38 0 95 33 0 0 0 21 107
+Nghost:          53775 ave       54266 max       53187 min
+Histogram: 128 0 0 0 0 1 127 0 0 128
+Neighs:    1.45786e+07 ave 1.46117e+07 max 1.45471e+07 min
+Histogram: 77 51 0 2 104 22 0 0 62 66
+
+Total # of neighbors = 5.5981697e+09
+Ave neighs/atom = 280.99109
+Neighbor list builds = 5
+Dangerous builds not checked
+Total wall time: 0:08:16
 ```
 
 ### Scale
