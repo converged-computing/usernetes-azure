@@ -911,10 +911,10 @@ OMPI_MCA_spml=ucx
 OMPI_MCA_osc=ucx
 
 for ((i=1; i<=5; i++)); do 
-        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 32 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite;
-        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 32 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
-        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 32 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
-        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 32 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
+        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000004] singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite;
+        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000008] singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
+        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-user[000001-000009],flux-user00000A,flux-user00000B,flux-user00000C,flux-user00000D,flux-user00000E,flux-user00000F,flux-user00000G singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
+        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
 done
 
 ./save.sh $output
@@ -935,10 +935,10 @@ OMPI_MCA_spml=ucx
 OMPI_MCA_osc=ucx
 
 for ((i=1; i<=5; i++)); do 
-        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-4] /usr/bin/lmp -v x 32 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite;
-        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-8] /usr/bin/lmp -v x 32 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
-        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-16] /usr/bin/lmp -v x 32 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
-        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task /usr/bin/lmp -v x 32 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
+        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-4] /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite;
+        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-8] /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
+        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task --requires=hosts:flux-sample[1-16] /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
+        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
 done
 
 ./save.sh $output
