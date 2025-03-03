@@ -535,10 +535,90 @@ sys	0m0.086s
 ```
 
 ```
-#real	2m16.995s
-user	0m0.071s
-sys	0m0.031s
-time flux run -N 2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS usernetes-azure_lammps.sif /usr/bin/lmp -v x 32 -v y 32 -v z 8 -in ./in.reaxff.hns -nocite
+#real	8m14.868s
+user	0m0.083s
+sys	0m0.034s
+time flux run -N 2 --tasks-per-node=96 -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS --env UCX_NET_DEVICES=mlx5_0:1 usernetes-azure_lammps.sif /usr/bin/lmp -v x 32 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite
+LAMMPS (17 Apr 2024 - Development - a8687b5)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+Reading data file ...
+  triclinic box = (0 0 0) to (22.326 11.1412 13.778966) with tilt (0 -5.02603 0)
+  8 by 4 by 6 MPI processor grid
+  reading atoms ...
+  304 atoms
+  reading velocities ...
+  304 velocities
+  read_data CPU = 0.193 seconds
+Replication is creating a 32x32x32 = 32768 times larger system...
+  triclinic box = (0 0 0) to (714.432 356.5184 440.92691) with tilt (0 -160.83296 0)
+  8 by 4 by 6 MPI processor grid
+  bounding box image = (0 -1 -1) to (0 1 1)
+  bounding box extra memory = 0.03 MB
+  average # of replicas added to proc = 339.74 out of 32768 (1.04%)
+  9961472 atoms
+  replicate CPU = 0.043 seconds
+Neighbor list info ...
+  update: every = 20 steps, delay = 0 steps, check = no
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 11
+  ghost atom cutoff = 11
+  binsize = 5.5, bins = 160 65 81
+  2 neighbor lists, perpetual/occasional/extra = 2 0 0
+  (1) pair reaxff, perpetual
+      attributes: half, newton off, ghost
+      pair build: half/bin/ghost/newtoff
+      stencil: full/ghost/bin/3d
+      bin: standard
+  (2) fix qeq/reax, perpetual, copy from (1)
+      attributes: half, newton off
+      pair build: copy
+      stencil: none
+      bin: none
+Setting up Verlet run ...
+  Unit style    : real
+  Current step  : 0
+  Time step     : 0.1
+Per MPI rank memory allocation (min/avg/max) = 1847 | 1853 | 1859 Mbytes
+   Step          Temp          PotEng         Press          E_vdwl         E_coul         Volume    
+         0   300           -113.27833      439.02011     -111.57687     -1.7014647      1.1230768e+08
+        10   300.79323     -113.28052      814.31334     -111.57908     -1.7014379      1.1230768e+08
+        20   302.45258     -113.28533      1685.6417     -111.584       -1.7013293      1.1230768e+08
+        30   302.59442     -113.28563      4263.4085     -111.58452     -1.7011034      1.1230768e+08
+        40   300.64311     -113.27973      6364.2208     -111.57896     -1.7007792      1.1230768e+08
+        50   297.45605     -113.27019      6459.0576     -111.56978     -1.7004159      1.1230768e+08
+        60   294.76611     -113.26213      6171.9365     -111.56208     -1.7000481      1.1230768e+08
+        70   294.67238     -113.26181      6799.0791     -111.56213     -1.699674       1.1230768e+08
+        80   297.76439     -113.271        8195.5719     -111.5717      -1.6992977      1.1230768e+08
+        90   301.66481     -113.28262      9358.9045     -111.58366     -1.6989613      1.1230768e+08
+       100   302.60489     -113.28537      10365.204     -111.58666     -1.6987175      1.1230768e+08
+Loop time of 474.298 on 192 procs for 100 steps with 9961472 atoms
+
+Performance: 0.002 ns/day, 13174.938 hours/ns, 0.211 timesteps/s, 2.100 Matom-step/s
+99.9% CPU use with 192 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 278.58     | 289.96     | 304.67     |  29.1 | 61.13
+Neigh   | 2.9969     | 3.0502     | 3.2227     |   2.1 |  0.64
+Comm    | 0.65996    | 14.253     | 26.536     | 133.7 |  3.01
+Output  | 0.0062742  | 0.44786    | 1.403      |  51.7 |  0.09
+Modify  | 165.68     | 166.56     | 168        |   6.4 | 35.12
+Other   |            | 0.03078    |            |       |  0.01
+
+Nlocal:        51882.7 ave       52018 max       51768 min
+Histogram: 55 9 1 51 12 0 0 0 3 61
+Nghost:        53775.5 ave       54255 max       53190 min
+Histogram: 64 0 0 0 0 0 64 0 0 64
+Neighs:    1.45786e+07 ave 1.46096e+07 max 1.45482e+07 min
+Histogram: 46 18 0 1 49 14 0 0 5 59
+
+Total # of neighbors = 2.7990831e+09
+Ave neighs/atom = 280.99091
+Neighbor list builds = 5
+Dangerous builds not checked
+Total wall time: 0:08:04
 ```
 
 #### Usernetes
@@ -648,10 +728,6 @@ sys     0m0.027s
 time flux run -N 2 --tasks-per-node=96 -o cpu-affinity=per-task /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite
  1984.637562] Out of memory: Killed process 16060 (lmp) total-vm:9388380kB, anon-rss:5008112kB, file-rss:9984kB, shmem-rss:20736kB, UID:1000 pgtables:10528kB oom_score_adj:1000
 ```
-```
-time flux run -N 2 --tasks-per-node=96 -o cpu-affinity=per-task /usr/bin/lmp -v x 32 -v y 32 -v z 8 -in ./in.reaxff.hns -nocite
-```
-
 
 ### Scale
 #### Bare metal
