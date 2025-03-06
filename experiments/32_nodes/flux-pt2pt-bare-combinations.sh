@@ -1,6 +1,3 @@
-mkdir -p ./results/osu_bw
-mkdir -p ./results/osu_latency
-
 # At most 28 combinations, 8 nodes 2 at a time
 hosts=$(flux run -N 32 hostname | shuf -n 8 | tr '\n' ' ')
 list=${hosts}
