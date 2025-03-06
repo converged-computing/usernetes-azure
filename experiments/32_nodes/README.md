@@ -7,7 +7,43 @@ export UCX_TLS=rc,sm
 export OMPI_MCA_btl=^vader,tcp,openib,uct
 export OMPI_MCA_spml=ucx
 export OMPI_MCA_osc=ucx
+
+oras login ghcr.io --username lisejolicoeur
+
 ```
+## OSU pt2pt
+
+### Bare metal
+```
+mkdir -p ./results/osu_latency
+mkdir -p ./results/osu_bw
+
+./flux-pt2pt-bare-combinations.sh
+
+#look at the results see if they're coherent before pushing
+./check.sh ./results/osu_latency
+./check.sh ./results/osu_bw
+
+oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-osu_latency ./results/osu_latency
+oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-osu_bw ./results/osu_bw
+
+```
+### Usernetes 
+```
+mkdir -p ./results/osu_latency
+mkdir -p ./results/osu_bw
+
+./flux-pt2pt-usernetes-combinations.sh
+
+#look at the results see if they're coherent before pushing
+./check.sh ./results/osu_latency
+./check.sh ./results/osu_bw
+
+oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-osu_latency ./results/osu_latency
+oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-osu_bw ./results/osu_bw
+```
+
+
 ## OSU allreduce
 
 ### Bare metal
