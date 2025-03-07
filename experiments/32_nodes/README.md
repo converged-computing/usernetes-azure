@@ -9,29 +9,39 @@ export OMPI_MCA_spml=ucx
 export OMPI_MCA_osc=ucx
 
 oras login ghcr.io --username lisejolicoeur
+```
 
+Edit the Usernetes Makefile to have :
+```
+export HOSTNAME ?= $(shell hostname | tr 'A-Z' 'a-z')
+```
+
+```
+Prepull all the containers:
+cd /opt
+time flux exec -r all singularity pull docker://ghcr.io/converged-computing/usernetes-azure:osu
+time flux exec -r all singularity pull docker://ghcr.io/converged-computing/usernetes-azure:lammps
+time flux exec -r all singularity pull docker://ghcr.io/converged-computing/usernetes-azure:minife
+time flux exec -r all singularity pull docker://ghcr.io/converged-computing/usernetes-azure:amg
 ```
 ## OSU pt2pt
 
 ### Bare metal
 ```
-mkdir -p ./results/osu_latency
-mkdir -p ./results/osu_bw
+mkdir -p ./results/osu_pt2pt
 
+chmod +x flux-pt2pt-bare-combinations.sh
 ./flux-pt2pt-bare-combinations.sh
 
 #wait until all jobs are finished
-flux jobs
+flux jobs -a
 
 #look at the results see if they're coherent before pushing
-./check.sh ./results/osu_latency
-./check.sh ./results/osu_bw
+./check.sh ./results/osu_pt2pt
 
-./save.sh ./results/osu_latency
-./save.sh ./results/osu_bw
+./save.sh ./results/osu_pt2pt
 
-oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-osu_latency ./results/osu_latency
-oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-osu_bw ./results/osu_bw
+oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-osu_pt2pt ./results/osu_pt2pt
 
 ```
 ### Usernetes 
@@ -42,7 +52,7 @@ mkdir -p ./results/osu_bw
 ./flux-pt2pt-usernetes-combinations.sh
 
 #wait until all jobs are finished
-flux jobs
+flux jobs -a
 
 #look at the results see if they're coherent before pushing
 ./check.sh ./results/osu_latency
@@ -78,9 +88,9 @@ for ((i=1; i<=5; i++)); do
 done
 
 #wait until all jobs are finished
-flux jobs
+flux jobs -a
 
-./check.sh $output
+./check.sh
 ./save.sh $output
 oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$app $output
 ```
@@ -110,7 +120,7 @@ done
 #wait until all jobs are finished
 flux jobs
 
-./check.sh $output
+./check.sh
 ./save.sh $output
 oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-$app $output
 ```
@@ -129,16 +139,16 @@ OMPI_MCA_spml=ucx
 OMPI_MCA_osc=ucx
 
 for ((i=1; i<=5; i++)); do 
-        flux submit -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
-        flux submit -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
-        flux submit -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
-        flux submit -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
+        flux run -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
+        flux run -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
+        flux run -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
+        flux run -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_osu.sif /opt/osu-benchmark/build.openmpi/mpi/collective/osu_barrier;
 done
 
 #wait until all jobs are finished
-flux jobs
+flux jobs -a
 
-./check.sh $output
+./check.sh
 ./save.sh $output
 oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$app $output
 ```
@@ -170,7 +180,7 @@ done
 #wait until all jobs are finished
 flux jobs
 
-./check.sh $output
+./check.sh
 ./save.sh $output
 oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-$app $output
 ```
@@ -189,10 +199,18 @@ export OMPI_MCA_btl=^vader,tcp,openib,uct
 OMPI_MCA_spml=ucx
 OMPI_MCA_osc=ucx
 
+#divided into 4 loops to have all the 4 node jobs running at the same time to save time
+#flux would not schedule them otherwise
 for ((i=1; i<=5; i++)); do 
         flux submit -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite;
-        flux submit -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite; 
-        flux submit -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite; 
+done
+for ((i=1; i<=5; i++)); do 
+        flux submit -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite;
+done
+for ((i=1; i<=5; i++)); do
+        flux submit -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite;
+done
+for ((i=1; i<=5; i++)); do
         flux submit -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task singularity exec --pwd /opt/lammps/examples/reaxff/HNS /opt/usernetes-azure_lammps.sif /usr/bin/lmp -v x 64 -v y 64 -v z 32 -in ./in.reaxff.hns -nocite; 
 done
 
@@ -200,7 +218,7 @@ done
 #wait until all jobs are finished
 flux jobs
 
-./check.sh $output
+./check.sh
 ./save.sh $output
 oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$app $output
 ```
@@ -222,15 +240,21 @@ OMPI_MCA_osc=ucx
 
 for ((i=1; i<=5; i++)); do 
         flux submit -N 4 --tasks-per-node=96 --setattr=user.study_id=$app-4-iter-$i -o cpu-affinity=per-task /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite;
-        flux submit -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
-        flux submit -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
+done
+for ((i=1; i<=5; i++)); do 
+        flux submit -N 8 --tasks-per-node=96 --setattr=user.study_id=$app-8-iter-$i -o cpu-affinity=per-task /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite;
+done
+for ((i=1; i<=5; i++)); do 
+        flux submit -N 16 --tasks-per-node=96 --setattr=user.study_id=$app-16-iter-$i -o cpu-affinity=per-task /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite;
+done
+for ((i=1; i<=5; i++)); do 
         flux submit -N 32 --tasks-per-node=96 --setattr=user.study_id=$app-32-iter-$i -o cpu-affinity=per-task /usr/bin/lmp -v x 64 -v y 32 -v z 32 -in ./in.reaxff.hns -nocite; 
 done
 
 #wait until all jobs are finished
 flux jobs
 
-./check.sh $output
+./check.sh
 ./save.sh $output
 oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-$app $output
 ```
@@ -257,12 +281,12 @@ for ((i=1; i<=5; i++)); do
 done
 
 #fetch all yaml output files from nodes on the cluster
-flux exec -r all ...
+flux exec -r XX cat miniFE... > miniFE...
 
 #move output files to output folder
-mv miniFE*.yaml $output
+cp miniFE*.yaml $output
 
-./check.sh $output
+./check.sh
 ./save.sh $output
 oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$app $output
 ```
@@ -293,9 +317,9 @@ done
 flux exec -r all ...
 
 #move output files to output folder
-mv miniFE*.yaml $output
+cp miniFE*.yaml $output
 
-./check.sh $output
+./check.sh
 ./save.sh $output
 oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-$app $output
 ```
@@ -315,7 +339,7 @@ OMPI_MCA_spml=ucx
 OMPI_MCA_osc=ucx
 
 #test without OMP_NUM_THREADS=3 first and look at FOM : if it is better, use this configuration (remove OMP_NUM_THREADS, -n * 3 and adjust -P)
-flux run --cores-per-task 3 --exclusive -N 4 -n 384 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 8 8 6 -problem 2;
+flux run --exclusive -N 4 -n 384 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 8 8 6 -problem 2;
 
 for ((i=1; i<=5; i++)); do 
         flux submit --setattr=user.study_id=$app-4-iter-$i --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 4 -n 128 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 8 8 2 -problem 2;
@@ -324,7 +348,7 @@ for ((i=1; i<=5; i++)); do
 	flux submit --setattr=user.study_id=$app-32-iter-$i --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 32 -n 1024 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 16 8 8 -problem 2;
 done
 
-./check.sh $output
+./check.sh
 ./save.sh $output
 oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$app $output
 ```
@@ -351,7 +375,7 @@ for ((i=1; i<=5; i++)); do
 	flux submit --setattr=user.study_id=$app-32-iter-$i --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 32 -n 1024 -o cpu-affinity=per-task amg -n 256 256 128 -P 16 8 8 -problem 2;
 done
 
-./check.sh $output
+./check.sh
 ./save.sh $output
 oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-$app $output
 ```
