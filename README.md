@@ -35,6 +35,14 @@ Once the VMSS is created, you can log into the first VM.
 
 ## Installing Usernetes
 
+If some VMs have uppercase letters in their hostname, change the Makefile to have : 
+```
+HOSTNAME ?= $(shell hostname | tr 'A-Z' 'a-z')
+
+flux archive create --name=makefile --mmap -C /home/azureuser/usernetes Makefile
+flux exec -r all -x 0 flux archive extract --overwrite --name=makefile -C /home/azureuser/usernetes
+```
+
 On the first VM, run the typical steps to install Usernetes:
 
 ```console
