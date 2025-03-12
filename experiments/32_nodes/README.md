@@ -326,6 +326,106 @@ oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernete
 
 ## AMG
 
+### Preliminary tests
+```
+#test without OMP_NUM_THREADS=3 first and look at FOM : if it is better, use this configuration (remove OMP_NUM_THREADS, -n * 3 and adjust -P)
+
+#real	2m44.246s
+user	0m0.073s
+sys	0m0.033s
+time flux run --exclusive -N 4 -n 384 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 8 8 6 -problem 2
+Running with these driver parameters:
+  Problem ID    = 2
+
+=============================================
+Hypre init times:
+=============================================
+Hypre init:
+  wall clock time = 0.000029 seconds
+  Laplacian_7pt:
+    (Nx, Ny, Nz) = (2048, 2048, 768)
+    (Px, Py, Pz) = (8, 8, 6)
+
+=============================================
+Generate Matrix:
+=============================================
+Spatial Operator:
+  wall clock time = 4.368174 seconds
+  RHS vector has unit components
+  Initial guess is 0
+=============================================
+IJ Vector Setup:
+=============================================
+RHS and Initial Guess:
+  wall clock time = 0.215981 seconds
+=============================================
+Problem 2: AMG Setup Time:
+=============================================
+PCG Setup:
+  wall clock time = 62.721547 seconds
+
+FOM_Setup: nnz_AP / Setup Phase Time: 6.199187e+08
+
+=============================================
+Problem 2: AMG-PCG Solve Time:
+=============================================
+PCG Solve:
+  wall clock time = 86.212000 seconds
+
+Iterations = 28
+Final Relative Residual Norm = 5.829667e-09
+FOM_Solve: nnz_AP * iterations / Solve Phase Time: 4.510075e+08
+Figure of Merit (FOM): nnz_AP / (Setup Phase Time + 3 * Solve Phase Time) 1.209938e+08
+
+#real	0m48.913s
+user	0m0.074s
+sys	0m0.026s
+time flux run --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 4 -n 128 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 8 8 2 -problem 2
+Running with these driver parameters:
+  Problem ID    = 2
+
+=============================================
+Hypre init times:
+=============================================
+Hypre init:
+  wall clock time = 0.000027 seconds
+  Laplacian_7pt:
+    (Nx, Ny, Nz) = (2048, 2048, 256)
+    (Px, Py, Pz) = (8, 8, 2)
+
+=============================================
+Generate Matrix:
+=============================================
+Spatial Operator:
+  wall clock time = 1.585996 seconds
+  RHS vector has unit components
+  Initial guess is 0
+=============================================
+IJ Vector Setup:
+=============================================
+RHS and Initial Guess:
+  wall clock time = 0.074409 seconds
+=============================================
+Problem 2: AMG Setup Time:
+=============================================
+PCG Setup:
+  wall clock time = 21.651406 seconds
+
+FOM_Setup: nnz_AP / Setup Phase Time: 5.989061e+08
+
+=============================================
+Problem 2: AMG-PCG Solve Time:
+=============================================
+PCG Solve:
+  wall clock time = 23.428831 seconds
+
+Iterations = 22
+Final Relative Residual Norm = 9.729440e-09
+FOM_Solve: nnz_AP * iterations / Solve Phase Time: 5.534702e+08
+Figure of Merit (FOM): nnz_AP / (Setup Phase Time + 3 * Solve Phase Time) 1.410426e+08
+
+```
+
 ### Bare metal
 ```
 app=amg
@@ -337,9 +437,6 @@ export UCX_TLS=rc,sm
 export OMPI_MCA_btl=^vader,tcp,openib,uct
 OMPI_MCA_spml=ucx
 OMPI_MCA_osc=ucx
-
-#test without OMP_NUM_THREADS=3 first and look at FOM : if it is better, use this configuration (remove OMP_NUM_THREADS, -n * 3 and adjust -P)
-flux run --exclusive -N 4 -n 384 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 8 8 6 -problem 2;
 
 for ((i=1; i<=5; i++)); do 
         flux submit --setattr=user.study_id=$app-4-iter-$i --env OMP_NUM_THREADS=3 --cores-per-task 3 --exclusive -N 4 -n 128 -o cpu-affinity=per-task singularity exec /opt/usernetes-azure_amg2023.sif amg -n 256 256 128 -P 8 8 2 -problem 2;
