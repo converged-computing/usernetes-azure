@@ -22,7 +22,7 @@ cd /opt
 time flux exec -r all singularity pull docker://ghcr.io/converged-computing/usernetes-azure:osu
 time flux exec -r all singularity pull docker://ghcr.io/converged-computing/usernetes-azure:lammps
 time flux exec -r all singularity pull docker://ghcr.io/converged-computing/usernetes-azure:minife
-time flux exec -r all singularity pull docker://ghcr.io/converged-computing/usernetes-azure:amg
+time flux exec -r all singularity pull docker://ghcr.io/converged-computing/usernetes-azure:amg2023
 ```
 ## OSU pt2pt
 
