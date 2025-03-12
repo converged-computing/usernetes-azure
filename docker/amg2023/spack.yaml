@@ -1,0 +1,36 @@
+spack:
+  specs:
+  - amg2023 %gcc@13.3.0 +mpi +openmp ^cmake@3.28.3
+  - hypre %gcc@13.3.0 +mpi +openmp +int64
+  packages:
+    cmake:
+      externals:
+      - spec: cmake@3.28.3
+        prefix: /usr
+      buildable: false
+    openmpi:
+      externals:
+      - spec: openmpi@4.1.2%gcc@13.3.0
+        prefix: /usr/local
+        modules:
+        - openmpi/4.1.2
+      buildable: false
+  compilers:
+  - compiler:
+      spec: gcc@=13.3.0
+      paths:
+        cc: /usr/bin/gcc
+        cxx: /usr/bin/g++
+        f77: /usr/bin/gfortran
+        fc: /usr/bin/gfortran
+      flags:
+        cflags: -O3 -Ofast -fopenmp 
+        cxxflags: -O3 -Ofast -fopenmp 
+        fflags: -O3 -Ofast -fopenmp 
+      modules: []
+      operating_system: ubuntu24.04
+      environment: {}
+      extra_rpaths: []
+  config:
+    install_tree:
+      root: /opt/view
