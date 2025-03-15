@@ -49,20 +49,18 @@ oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-osu
 mkdir -p ./results/osu_latency
 mkdir -p ./results/osu_bw
 
+chmod +x flux-pt2pt-usernetes-combinations.sh
 ./flux-pt2pt-usernetes-combinations.sh
 
 #wait until all jobs are finished
 flux jobs -a
 
 #look at the results see if they're coherent before pushing
-./check.sh ./results/osu_latency
-./check.sh ./results/osu_bw
+./check.sh ./results/osu_pt2pt
 
-./save.sh ./results/osu_latency
-./save.sh ./results/osu_bw
+./save.sh ./results/osu_pt2pt
 
-oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-osu_latency ./results/osu_latency
-oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-osu_bw ./results/osu_bw
+oras push ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-osu_pt2pt ./results/osu_pt2pt
 ```
 
 
