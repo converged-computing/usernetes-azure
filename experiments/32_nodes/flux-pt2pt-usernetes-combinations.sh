@@ -11,12 +11,12 @@ for i in $hosts; do
   dequeue_from_list $list
   for j in $list; do
     echo "${i} ${j}"
-    flux submit -N 2 -n 2 \
+    flux submit --exclusive -N 2 -n 2 \
       --setattr=user.study_id=osu_latency-2-iter-$iter \
       --requires="hosts:${i},${j}" \
       -o cpu-affinity=per-task \
       /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency
-    flux submit -N 2 -n 2 \
+    flux submit --exclusive -N 2 -n 2 \
       --setattr=user.study_id=osu_bw-2-iter-$iter \
       --requires="hosts:${i},${j}" \
       -o cpu-affinity=per-task \
