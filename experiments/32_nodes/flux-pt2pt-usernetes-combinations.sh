@@ -11,7 +11,7 @@ for i in $hosts; do
   dequeue_from_list $list
   for j in $list; do
     echo "${i} ${j}"
-    flux submit run -N 2 -n 2 \
+    flux submit -N 2 -n 2 \
       --setattr=user.study_id=osu_latency-2-iter-$iter \
       --requires="hosts:${i},${j}" \
       -o cpu-affinity=per-task \
