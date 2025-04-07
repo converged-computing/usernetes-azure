@@ -1,6 +1,8 @@
 # Usernetes GPU azure
 
+## Lauching the VMs
 - Same setup as regular Usernetes in Azure interface
+- change start_script.sh to remove DefaultLimitMEMLOCK=infinity (start-script file will be created here)
 
 ## Installing GPU drivers in Ubuntu on Azure
 #https://learn.microsoft.com/en-us/azure/virtual-machines/linux/n-series-driver-setup#install-cuda-drivers-on-n-series-vms
