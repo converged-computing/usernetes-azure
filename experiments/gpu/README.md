@@ -1,7 +1,7 @@
 # AKS
 
 ```
-az group create --name aks-gpu-pytorch --location westus2
+az group create --name aks-gpu-pytorch --location southcentralus
 //don't know what this is
 //az feature register --namespace Microsoft.ContainerService --name UseCustomizedUbuntuPreview
 
