@@ -1,3 +1,33 @@
+# AKS
+
+```
+az group create --name aks-gpu-pytorch --location westus2
+//don't know what this is
+//az feature register --namespace Microsoft.ContainerService --name UseCustomizedUbuntuPreview
+
+az ppg create --name aks-pytorch --resource-group aks-gpu-pytorch --location southcentralus --type standard
+
+az aks create \
+    --resource-group aks-gpu-pytorch  \
+    --name aks-gpu-vmss \
+    --ppg /subscriptions/c87dfbe8-b453-4fc9-a779-7687a14b87eb/resourceGroups/flux-usernetes/providers/Microsoft.Compute/proximityPlacementGroups/aks-pytorch \
+    --network-plugin azure \
+    --node-count 1 \
+    --location southcentralus \
+    --enable-node-public-ip \
+    --node-vm-size standard_nd40rs_v2 \
+    --vm-set-type VirtualMachineScaleSets \
+    --load-balancer-sku standard \
+    --generate-ssh-keys \
+    --aks-custom-headers "CustomizedUbuntu=aks-ubuntu-2404,ContainerRuntime=containerd" \
+    --node-resource-group ??
+
+az aks get-credentials --resource-group aks-gpu-pytorch --name aks-gpu-vmss
+
+az feature register --namespace Microsoft.ContainerService --name AKSInfinibandSupport
+az provider register --namespace Microsoft.ContainerService
+```
+
 # Usernetes GPU azure
 
 ## Lauching the VMs
