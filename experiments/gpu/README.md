@@ -10,17 +10,16 @@ az ppg create --name aks-pytorch --resource-group aks-gpu-pytorch --location sou
 az aks create \
     --resource-group aks-gpu-pytorch  \
     --name aks-gpu-vmss \
-    --ppg /subscriptions/c87dfbe8-b453-4fc9-a779-7687a14b87eb/resourceGroups/flux-usernetes/providers/Microsoft.Compute/proximityPlacementGroups/aks-pytorch \
     --network-plugin azure \
     --node-count 1 \
-    --location southcentralus \
+    --location northcentralus \
     --enable-node-public-ip \
-    --node-vm-size standard_nd40rs_v2 \
+    --node-vm-size standard_nc64as_t4_v3 \
     --vm-set-type VirtualMachineScaleSets \
     --load-balancer-sku standard \
     --generate-ssh-keys \
     --aks-custom-headers "CustomizedUbuntu=aks-ubuntu-2404,ContainerRuntime=containerd" \
-    --node-resource-group ??
+    --node-resource-group aks-gpu-pytorch-cluster_nodes_northcentralus
 
 az aks get-credentials --resource-group aks-gpu-pytorch --name aks-gpu-vmss
 
