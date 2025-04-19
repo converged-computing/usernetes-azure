@@ -17,14 +17,15 @@ min_user = [15.27, 20.41, 30.30, 53.65]
 # Create line plot with error margins
 sns.set(style="darkgrid")
 plt.figure(figsize=(8, 6))
-sns.lineplot(x=x, y=bm, label='Bare metal')
+sns.lineplot(x=x, y=bm, label='Singularity')
 sns.lineplot(x=x, y=user, label='Usernetes')
 plt.fill_between(x, min_bm, max_bm, alpha=0.2)
 plt.fill_between(x, min_user, max_user, alpha=0.2)
 
 # Set plot title and labels
-plt.title('osu_allreduce, 96 tasks per node, UCX_TLS=rc,sm, size 64')
-plt.xlabel('Number of nodes')
+# 96 tasks per node, UCX_TLS=rc,sm, size 64
+plt.title('osu_allreduce')
+plt.xlabel('Nodes')
 plt.ylabel('Latency (microseconds)')
 plt.xticks(x,x)
 

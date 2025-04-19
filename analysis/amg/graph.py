@@ -17,14 +17,15 @@ min_user = [1.409862e+08, 2.299533e+08, 4.009945e+08, 6.507061e+08]
 # Create line plot with error margins
 sns.set(style="darkgrid")
 plt.figure(figsize=(8, 6))
-sns.lineplot(x=x, y=bm, label='Bare metal')
+sns.lineplot(x=x, y=bm, label='Singularity')
 sns.lineplot(x=x, y=user, label='Usernetes')
 plt.fill_between(x, min_bm, max_bm, alpha=0.2)
 plt.fill_between(x, min_user, max_user, alpha=0.2)
 
 # Set plot title and labels
-plt.title('AMG, 32 tasks per node, OMP_NUM_THREADS=3, 3 cores per task, 256x256x128')
-plt.xlabel('Number of nodes')
+# 32 tasks per node, OMP_NUM_THREADS=3, 3 cores per task, 256x256x128
+plt.title('AMG')
+plt.xlabel('Nodes')
 plt.ylabel('Figure of Merit')
 plt.xticks(x,x)
 

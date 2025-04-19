@@ -17,14 +17,15 @@ min_user = [4.196, 7.798, 12.134, 27.733]
 # Create line plot with error margins
 sns.set(style="darkgrid")
 plt.figure(figsize=(8, 6))
-sns.lineplot(x=x, y=bm, label='Bare metal')
+sns.lineplot(x=x, y=bm, label='Singularity')
 sns.lineplot(x=x, y=user, label='Usernetes')
 plt.fill_between(x, min_bm, max_bm, alpha=0.2)
 plt.fill_between(x, min_user, max_user, alpha=0.2)
 
 # Set plot title and labels
-plt.title('LAMMPS, 96 nodes per task, 64x64x32')
-plt.xlabel('Number of nodes')
+# 96 nodes per task, 64x64x32
+plt.title('LAMMPS')
+plt.xlabel('Nodes')
 plt.ylabel('Matom-step/s')
 plt.xticks(x,x)
 
