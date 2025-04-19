@@ -1,15 +1,10 @@
 # AKS setup and preliminary tests
 
 ```
-az group create --name aks-gpu-pytorch --location southcentralus
-//don't know what this is
-//az feature register --namespace Microsoft.ContainerService --name UseCustomizedUbuntuPreview
-
-az ppg create --name aks-pytorch --resource-group aks-gpu-pytorch --location southcentralus --type standard
-
 az aks create \
     --resource-group aks-gpu-pytorch  \
     --name aks-gpu-vmss \
+    --ppg /subscriptions/3e173a37-8f81-492f-a234-ca727b72e6f8/resourceGroups/aks-gpu-pytorch/providers/Microsoft.Compute/proximityPlacementGroups/aks-pytorch \
     --network-plugin azure \
     --node-count 1 \
     --location northcentralus \
@@ -18,13 +13,33 @@ az aks create \
     --vm-set-type VirtualMachineScaleSets \
     --load-balancer-sku standard \
     --generate-ssh-keys \
-    --aks-custom-headers "CustomizedUbuntu=aks-ubuntu-2404,ContainerRuntime=containerd" \
+    --aks-custom-headers "ContainerRuntime=containerd" \
     --node-resource-group aks-gpu-pytorch-cluster_nodes_northcentralus
-
 az aks get-credentials --resource-group aks-gpu-pytorch --name aks-gpu-vmss
 
-az feature register --namespace Microsoft.ContainerService --name AKSInfinibandSupport
-az provider register --namespace Microsoft.ContainerService
+az aks get-credentials --name "aks-gpu-vmss" --resource-group "aks-gpu-pytorch"
+
+#az feature register --namespace Microsoft.ContainerService --name AKSInfinibandSupport
+#az provider register --namespace Microsoft.ContainerService
+
+...
+
+az aks delete --name "aks-gpu-vmss" --resource-group "aks-gpu-pytorch"
+```
+
+
+```
+kubectl describe node aks-nodepool1-36654457-vmss000000
+System Info:
+  Machine ID:                 a77a00b8dc274b6099ff199745b5de8d
+  System UUID:                ee588be7-2af4-45d0-a9ed-06a40305133c
+  Boot ID:                    b3f50fe8-4e0f-4c2f-b42b-5cc37a7b1c14
+  Kernel Version:             5.15.0-1084-azure
+  OS Image:                   Ubuntu 22.04.5 LTS
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.7.27-1
+  Kubelet Version:            v1.31.7
 ```
 
 ```
