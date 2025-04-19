@@ -2,14 +2,14 @@
 
 ```
 az aks create \
-    --resource-group aks-gpu-pytorch  \
+    --resource-group flux-usernetes-2  \
     --name aks-gpu-vmss \
-    --ppg /subscriptions/3e173a37-8f81-492f-a234-ca727b72e6f8/resourceGroups/aks-gpu-pytorch/providers/Microsoft.Compute/proximityPlacementGroups/aks-pytorch \
+    --ppg /subscriptions/3e173a37-8f81-492f-a234-ca727b72e6f8/resourceGroups/flux-usernetes-2/providers/Microsoft.Compute/proximityPlacementGroups/flux-usernetes-pg \
     --network-plugin azure \
     --node-count 1 \
-    --location northcentralus \
+    --location southcentralus \
     --enable-node-public-ip \
-    --node-vm-size standard_nc64as_t4_v3 \
+    --node-vm-size standard_nd40rs_v2 \
     --vm-set-type VirtualMachineScaleSets \
     --load-balancer-sku standard \
     --generate-ssh-keys \
@@ -17,14 +17,14 @@ az aks create \
     --node-resource-group aks-gpu-pytorch-cluster_nodes_northcentralus
 az aks get-credentials --resource-group aks-gpu-pytorch --name aks-gpu-vmss
 
-az aks get-credentials --name "aks-gpu-vmss" --resource-group "aks-gpu-pytorch"
+az aks get-credentials --name "aks-gpu-vmss" --resource-group "flux-usernetes-2"
 
 #az feature register --namespace Microsoft.ContainerService --name AKSInfinibandSupport
 #az provider register --namespace Microsoft.ContainerService
 
 ...
 
-az aks delete --name "aks-gpu-vmss" --resource-group "aks-gpu-pytorch"
+az aks delete --name "aks-gpu-vmss" --resource-group "flux-usernetes-2"
 ```
 
 
@@ -49,7 +49,7 @@ kubectl get nodes -o json | jq .items[].status.allocatable
 
 #from https://github.com/converged-computing/google-performance-study/tree/main/experiments/usernetes/mnist-gpu/gke/size-2
 
-kubectl get nodes -o json > nodes-$NODES-$(date +%s).json
+kubectl get nodes -o json > nodes-$(date +%s).json
 ```
 
 ## Experiments
@@ -61,48 +61,49 @@ kubectl apply --server-side -k "github.com/kubeflow/training-operator.git/manife
 
 ### 1 node
 ```
-cd size-1
+cd size-1/data
 
 for i in $(seq 1 5); do     
   echo "Running iteration $i"
-  kubectl apply -f ../simple-1node.yaml
+  kubectl apply -f ../../../simple-1node.yaml
   sleep 20
   kubectl logs pytorch-mnist-master-0 -f | tee mnist-master-1-iter-${i}.out
   kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
-  kubectl delete -f ../simple-1node.yaml --wait
+  kubectl delete -f ../../../simple-1node.yaml --wait
 done
 
 ```
 
 ### 2 nodes
 ```
-git clone https://github.com/converged-computing/aks-infiniband-install ./infiniband
-kubectl apply -f infiniband/driver-installation-with-gpu.yaml
-...TODO on 2 nodes
+#git clone https://github.com/converged-computing/aks-infiniband-install ./infiniband
+#kubectl apply -f infiniband/driver-installation-with-gpu.yaml
+#kubectl apply -f infiniband/daemonset/
+#we don't need this, just security context
 
-cd size-2
+cd size-2/data
 
 for i in $(seq 1 5); do     
   echo "Running iteration $i"
-  kubectl apply -f ../simple-2nodes.yaml
+  kubectl apply -f ../../../simple-2nodes.yaml
   sleep 20
-  kubectl logs pytorch-mnist-master-0 -f |& tee mnist-master-$size-iter-${i}.out
+  kubectl logs pytorch-mnist-master-0 -f | tee mnist-master-2-iter-${i}.out
   kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
-  kubectl delete -f simple.yaml --wait
+  kubectl delete -f ../../../simple-2nodes.yaml --wait
 done
 ```
 
 ### 4 nodes
 ```
-cd size-4
+cd size-4/data
 
 for i in $(seq 1 5); do     
   echo "Running iteration $i"
-  kubectl apply -f ../simple-4nodes.yaml
+  kubectl apply -f ../../../simple-4nodes.yaml
   sleep 20
-  kubectl logs pytorch-mnist-master-0 -f |& tee mnist-master-$size-iter-${i}.out
+  kubectl logs pytorch-mnist-master-0 -f | tee mnist-master-4-iter-${i}.out
   kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
-  kubectl delete -f simple.yaml --wait
+  kubectl delete -f ../../../simple-4nodes.yaml --wait
 done
 ```
 
@@ -232,7 +233,7 @@ nvidia-utils-535/noble-updates,noble-security,now 535.183.01-0ubuntu0.24.04.1 am
 xserver-xorg-video-nvidia-535/noble-updates,noble-security,now 535.183.01-0ubuntu0.24.04.1 amd64 [installed,automatic]
 ```
 
-## Usernetes on 1 node
+## Launch Usernetes
 ```
 curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
   && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
@@ -288,6 +289,15 @@ make install-flannel
 make kubeconfig
 export KUBECONFIG=/home/azureuser/flux-usernetes/google/gpu/kubeconfig
 kubectl get pods -A
+
+#if we have more than 1 instance
+#does not work
+make join-command
+flux archive create --name=join-command --mmap -C /home/azureuser/flux-usernetes/google/gpu join-command
+flux exec -r 1 flux archive extract --overwrite --name=join-command -C /home/azureuser/flux-usernetes/google/gpu
+flux exec -r 1 --dir /home/azureuser/flux-usernetes/google/gpu make up
+flux exec -r 1 --dir /home/azureuser/flux-usernetes/google/gpu make nvidia
+flux exec -r 1 --dir /home/azureuser/flux-usernetes/google/gpu make kubeadm-join
 
 kubectl taint node u7s-flux-usernetes node-role.kubernetes.io/control-plane:NoSchedule-
 

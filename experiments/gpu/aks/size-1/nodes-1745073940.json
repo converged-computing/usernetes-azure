@@ -7,48 +7,48 @@
             "metadata": {
                 "annotations": {
                     "alpha.kubernetes.io/provided-node-ip": "10.224.0.4",
-                    "csi.volume.kubernetes.io/nodeid": "{\"disk.csi.azure.com\":\"aks-nodepool1-34352080-vmss000000\",\"file.csi.azure.com\":\"aks-nodepool1-34352080-vmss000000\"}",
+                    "csi.volume.kubernetes.io/nodeid": "{\"disk.csi.azure.com\":\"aks-nodepool1-33585911-vmss000000\",\"file.csi.azure.com\":\"aks-nodepool1-33585911-vmss000000\"}",
                     "node.alpha.kubernetes.io/ttl": "0",
                     "volumes.kubernetes.io/controller-managed-attach-detach": "true"
                 },
-                "creationTimestamp": "2025-04-19T10:22:56Z",
+                "creationTimestamp": "2025-04-19T14:43:19Z",
                 "labels": {
                     "accelerator": "nvidia",
                     "agentpool": "nodepool1",
                     "beta.kubernetes.io/arch": "amd64",
-                    "beta.kubernetes.io/instance-type": "standard_nc64as_t4_v3",
+                    "beta.kubernetes.io/instance-type": "standard_nd40rs_v2",
                     "beta.kubernetes.io/os": "linux",
-                    "failure-domain.beta.kubernetes.io/region": "northcentralus",
+                    "failure-domain.beta.kubernetes.io/region": "southcentralus",
                     "failure-domain.beta.kubernetes.io/zone": "0",
                     "kubernetes.azure.com/accelerator": "nvidia",
                     "kubernetes.azure.com/agentpool": "nodepool1",
                     "kubernetes.azure.com/cluster": "aks-gpu-pytorch-cluster_nodes_northcentralus",
-                    "kubernetes.azure.com/consolidated-additional-properties": "9792b5bc-1d07-11f0-8f3c-a23067faab3e",
-                    "kubernetes.azure.com/kubelet-identity-client-id": "98c648da-9ebe-453b-ba1a-39e7fa1125f3",
+                    "kubernetes.azure.com/consolidated-additional-properties": "b2b75560-1d2b-11f0-9f81-fe7d2c3ea224",
+                    "kubernetes.azure.com/kubelet-identity-client-id": "c255644b-30c9-457b-baf1-e7e57bfd19b7",
                     "kubernetes.azure.com/mode": "system",
                     "kubernetes.azure.com/node-image-version": "AKSUbuntu-2204gen2containerd-202504.02.0",
                     "kubernetes.azure.com/nodepool-type": "VirtualMachineScaleSets",
                     "kubernetes.azure.com/os-sku": "Ubuntu",
                     "kubernetes.azure.com/role": "agent",
                     "kubernetes.io/arch": "amd64",
-                    "kubernetes.io/hostname": "aks-nodepool1-34352080-vmss000000",
+                    "kubernetes.io/hostname": "aks-nodepool1-33585911-vmss000000",
                     "kubernetes.io/os": "linux",
-                    "node.kubernetes.io/instance-type": "standard_nc64as_t4_v3",
+                    "node.kubernetes.io/instance-type": "standard_nd40rs_v2",
                     "topology.disk.csi.azure.com/zone": "",
-                    "topology.kubernetes.io/region": "northcentralus",
+                    "topology.kubernetes.io/region": "southcentralus",
                     "topology.kubernetes.io/zone": "0"
                 },
-                "name": "aks-nodepool1-34352080-vmss000000",
-                "resourceVersion": "2395",
-                "uid": "6ccc3f90-a56e-46e7-8052-6636119171ac"
+                "name": "aks-nodepool1-33585911-vmss000000",
+                "resourceVersion": "2605",
+                "uid": "80cb8512-7c59-4e10-a14d-e86326ae9f7f"
             },
             "spec": {
-                "providerID": "azure:///subscriptions/3e173a37-8f81-492f-a234-ca727b72e6f8/resourceGroups/aks-gpu-pytorch-cluster_nodes_northcentralus/providers/Microsoft.Compute/virtualMachineScaleSets/aks-nodepool1-34352080-vmss/virtualMachines/0"
+                "providerID": "azure:///subscriptions/3e173a37-8f81-492f-a234-ca727b72e6f8/resourceGroups/aks-gpu-pytorch-cluster_nodes_northcentralus/providers/Microsoft.Compute/virtualMachineScaleSets/aks-nodepool1-33585911-vmss/virtualMachines/0"
             },
             "status": {
                 "addresses": [
                     {
-                        "address": "aks-nodepool1-34352080-vmss000000",
+                        "address": "aks-nodepool1-33585911-vmss000000",
                         "type": "Hostname"
                     },
                     {
@@ -56,136 +56,136 @@
                         "type": "InternalIP"
                     },
                     {
-                        "address": "135.232.248.12",
+                        "address": "4.151.80.168",
                         "type": "ExternalIP"
                     }
                 ],
                 "allocatable": {
-                    "cpu": "63260m",
-                    "ephemeral-storage": "134688359816",
+                    "cpu": "39500m",
+                    "ephemeral-storage": "958876314880",
                     "hugepages-1Gi": "0",
                     "hugepages-2Mi": "0",
-                    "memory": "453262552Ki",
-                    "nvidia.com/gpu": "4",
+                    "memory": "692737332Ki",
+                    "nvidia.com/gpu": "8",
                     "pods": "30"
                 },
                 "capacity": {
-                    "cpu": "64",
-                    "ephemeral-storage": "146146224Ki",
+                    "cpu": "40",
+                    "ephemeral-storage": "1040447392Ki",
                     "hugepages-1Gi": "0",
                     "hugepages-2Mi": "0",
-                    "memory": "454030552Ki",
-                    "nvidia.com/gpu": "4",
+                    "memory": "693505332Ki",
+                    "nvidia.com/gpu": "8",
                     "pods": "30"
                 },
                 "conditions": [
                     {
-                        "lastHeartbeatTime": "2025-04-19T10:25:54Z",
-                        "lastTransitionTime": "2025-04-19T10:24:55Z",
-                        "message": "docker is functioning properly",
-                        "reason": "NoFrequentDockerRestart",
-                        "status": "False",
-                        "type": "FrequentDockerRestart"
-                    },
-                    {
-                        "lastHeartbeatTime": "2025-04-19T10:25:54Z",
-                        "lastTransitionTime": "2025-04-19T10:25:53Z",
-                        "message": "VM has no scheduled event",
-                        "reason": "NoVMEventScheduled",
-                        "status": "False",
-                        "type": "VMEventScheduled"
-                    },
-                    {
-                        "lastHeartbeatTime": "2025-04-19T10:25:54Z",
-                        "lastTransitionTime": "2025-04-19T10:24:55Z",
-                        "message": "Filesystem is not read-only",
-                        "reason": "FilesystemIsNotReadOnly",
-                        "status": "False",
-                        "type": "ReadonlyFilesystem"
-                    },
-                    {
-                        "lastHeartbeatTime": "2025-04-19T10:25:54Z",
-                        "lastTransitionTime": "2025-04-19T10:24:55Z",
+                        "lastHeartbeatTime": "2025-04-19T14:45:40Z",
+                        "lastTransitionTime": "2025-04-19T14:44:41Z",
                         "message": "containerd is functioning properly",
                         "reason": "NoFrequentContainerdRestart",
                         "status": "False",
                         "type": "FrequentContainerdRestart"
                     },
                     {
-                        "lastHeartbeatTime": "2025-04-19T10:25:54Z",
-                        "lastTransitionTime": "2025-04-19T10:24:55Z",
-                        "message": "Filesystem is healthy",
-                        "reason": "FilesystemIsOK",
-                        "status": "False",
-                        "type": "FilesystemCorruptionProblem"
-                    },
-                    {
-                        "lastHeartbeatTime": "2025-04-19T10:25:54Z",
-                        "lastTransitionTime": "2025-04-19T10:24:55Z",
-                        "message": "kernel has no deadlock",
-                        "reason": "KernelHasNoDeadlock",
-                        "status": "False",
-                        "type": "KernelDeadlock"
-                    },
-                    {
-                        "lastHeartbeatTime": "2025-04-19T10:25:54Z",
-                        "lastTransitionTime": "2025-04-19T10:24:55Z",
-                        "message": "kubelet is functioning properly",
-                        "reason": "NoFrequentKubeletRestart",
-                        "status": "False",
-                        "type": "FrequentKubeletRestart"
-                    },
-                    {
-                        "lastHeartbeatTime": "2025-04-19T10:25:54Z",
-                        "lastTransitionTime": "2025-04-19T10:24:55Z",
-                        "message": "container runtime service is up",
-                        "reason": "ContainerRuntimeIsUp",
-                        "status": "False",
-                        "type": "ContainerRuntimeProblem"
-                    },
-                    {
-                        "lastHeartbeatTime": "2025-04-19T10:25:54Z",
-                        "lastTransitionTime": "2025-04-19T10:24:55Z",
-                        "message": "node is functioning properly",
-                        "reason": "NoFrequentUnregisterNetDevice",
-                        "status": "False",
-                        "type": "FrequentUnregisterNetDevice"
-                    },
-                    {
-                        "lastHeartbeatTime": "2025-04-19T10:25:54Z",
-                        "lastTransitionTime": "2025-04-19T10:24:55Z",
+                        "lastHeartbeatTime": "2025-04-19T14:45:40Z",
+                        "lastTransitionTime": "2025-04-19T14:44:41Z",
                         "message": "kubelet service is up",
                         "reason": "KubeletIsUp",
                         "status": "False",
                         "type": "KubeletProblem"
                     },
                     {
-                        "lastHeartbeatTime": "2025-04-19T10:24:59Z",
-                        "lastTransitionTime": "2025-04-19T10:22:56Z",
+                        "lastHeartbeatTime": "2025-04-19T14:45:40Z",
+                        "lastTransitionTime": "2025-04-19T14:44:41Z",
+                        "message": "kubelet is functioning properly",
+                        "reason": "NoFrequentKubeletRestart",
+                        "status": "False",
+                        "type": "FrequentKubeletRestart"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T14:45:40Z",
+                        "lastTransitionTime": "2025-04-19T14:44:41Z",
+                        "message": "docker is functioning properly",
+                        "reason": "NoFrequentDockerRestart",
+                        "status": "False",
+                        "type": "FrequentDockerRestart"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T14:45:40Z",
+                        "lastTransitionTime": "2025-04-19T14:44:41Z",
+                        "message": "container runtime service is up",
+                        "reason": "ContainerRuntimeIsUp",
+                        "status": "False",
+                        "type": "ContainerRuntimeProblem"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T14:45:40Z",
+                        "lastTransitionTime": "2025-04-19T14:44:41Z",
+                        "message": "kernel has no deadlock",
+                        "reason": "KernelHasNoDeadlock",
+                        "status": "False",
+                        "type": "KernelDeadlock"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T14:45:40Z",
+                        "lastTransitionTime": "2025-04-19T14:44:41Z",
+                        "message": "node is functioning properly",
+                        "reason": "NoFrequentUnregisterNetDevice",
+                        "status": "False",
+                        "type": "FrequentUnregisterNetDevice"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T14:45:40Z",
+                        "lastTransitionTime": "2025-04-19T14:44:41Z",
+                        "message": "Filesystem is not read-only",
+                        "reason": "FilesystemIsNotReadOnly",
+                        "status": "False",
+                        "type": "ReadonlyFilesystem"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T14:45:40Z",
+                        "lastTransitionTime": "2025-04-19T14:44:41Z",
+                        "message": "Filesystem is healthy",
+                        "reason": "FilesystemIsOK",
+                        "status": "False",
+                        "type": "FilesystemCorruptionProblem"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T14:45:40Z",
+                        "lastTransitionTime": "2025-04-19T14:45:39Z",
+                        "message": "VM has no scheduled event",
+                        "reason": "NoVMEventScheduled",
+                        "status": "False",
+                        "type": "VMEventScheduled"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T14:45:22Z",
+                        "lastTransitionTime": "2025-04-19T14:43:19Z",
                         "message": "kubelet has sufficient memory available",
                         "reason": "KubeletHasSufficientMemory",
                         "status": "False",
                         "type": "MemoryPressure"
                     },
                     {
-                        "lastHeartbeatTime": "2025-04-19T10:24:59Z",
-                        "lastTransitionTime": "2025-04-19T10:22:56Z",
+                        "lastHeartbeatTime": "2025-04-19T14:45:22Z",
+                        "lastTransitionTime": "2025-04-19T14:43:19Z",
                         "message": "kubelet has no disk pressure",
                         "reason": "KubeletHasNoDiskPressure",
                         "status": "False",
                         "type": "DiskPressure"
                     },
                     {
-                        "lastHeartbeatTime": "2025-04-19T10:24:59Z",
-                        "lastTransitionTime": "2025-04-19T10:22:56Z",
+                        "lastHeartbeatTime": "2025-04-19T14:45:22Z",
+                        "lastTransitionTime": "2025-04-19T14:43:19Z",
                         "message": "kubelet has sufficient PID available",
                         "reason": "KubeletHasSufficientPID",
                         "status": "False",
                         "type": "PIDPressure"
                     },
                     {
-                        "lastHeartbeatTime": "2025-04-19T10:24:59Z",
-                        "lastTransitionTime": "2025-04-19T10:22:57Z",
+                        "lastHeartbeatTime": "2025-04-19T14:45:22Z",
+                        "lastTransitionTime": "2025-04-19T14:43:19Z",
                         "message": "kubelet is posting ready status",
                         "reason": "KubeletReady",
                         "status": "True",
@@ -310,6 +310,13 @@
                             "mcr.microsoft.com/oss/kubernetes-csi/azurefile-csi:v1.30.9"
                         ],
                         "sizeBytes": 116191840
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes-csi/azurefile-csi@sha256:db51a34f6e9d4984bbea5d03e52be5a0c5bf7d2a1d306af3a83aec94a7af28c9",
+                            "mcr.microsoft.com/oss/kubernetes-csi/azurefile-csi:v1.31.4"
+                        ],
+                        "sizeBytes": 115886296
                     },
                     {
                         "names": [
@@ -463,6 +470,8 @@
                     },
                     {
                         "names": [
+                            "mcr.microsoft.com/oss/v2/azure/ip-masq-agent-v2@sha256:80911ffa1b37d58c556431b759ebcb75ab1856e97b55157bb09a737f4940c9ae",
+                            "mcr.microsoft.com/oss/v2/azure/ip-masq-agent-v2:v0.1.15",
                             "mcr.microsoft.com/oss/v2/azure/ip-masq-agent-v2:v0.1.15-2"
                         ],
                         "sizeBytes": 28441945
@@ -491,25 +500,19 @@
                             "mcr.microsoft.com/containernetworking/azure-ipam:v0.2.1"
                         ],
                         "sizeBytes": 26830903
-                    },
-                    {
-                        "names": [
-                            "mcr.microsoft.com/containernetworking/azure-ipam:v0.2.0"
-                        ],
-                        "sizeBytes": 26330144
                     }
                 ],
                 "nodeInfo": {
                     "architecture": "amd64",
-                    "bootID": "b4e74eb4-e8e7-4c12-a256-262cdd2221a1",
+                    "bootID": "25e4cbb3-1f14-4ed9-a060-cd5c7862aa02",
                     "containerRuntimeVersion": "containerd://1.7.27-1",
                     "kernelVersion": "5.15.0-1084-azure",
                     "kubeProxyVersion": "v1.31.7",
                     "kubeletVersion": "v1.31.7",
-                    "machineID": "19afb230c92c4b989de8452da48dcb72",
+                    "machineID": "e9e9163017ab4a4282e192ed9d88abb0",
                     "operatingSystem": "linux",
                     "osImage": "Ubuntu 22.04.5 LTS",
-                    "systemUUID": "e24fe12e-1e69-4471-935c-3fb25d28b0be"
+                    "systemUUID": "a5983f95-4d51-42a8-974e-dec5741beeeb"
                 }
             }
         }
