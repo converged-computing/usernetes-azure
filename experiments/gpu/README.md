@@ -46,54 +46,64 @@ System Info:
 kubectl get nodes
 kubectl apply -f nvidia-device-plugin.yaml
 kubectl get nodes -o json | jq .items[].status.allocatable
-kubectl apply -f flux-operator.yaml
 
 #from https://github.com/converged-computing/google-performance-study/tree/main/experiments/usernetes/mnist-gpu/gke/size-2
 
-kubectl create namespace monitoring
-kubectl apply -f ../kubernetes-event-monitor
-mkdir -p ./data/metadata
-kubectl get nodes -o json > ./data/metadata/nodes-$NODES-$(date +%s).json
+kubectl get nodes -o json > nodes-$NODES-$(date +%s).json
+```
 
+## Experiments
+
+```
+kubectl apply --server-side -k "github.com/kubeflow/training-operator.git/manifests/overlays/standalone?ref=v1.8.1"
+(simple.yaml from https://github.com/converged-computing/google-performance-study/blob/main/experiments/usernetes/mnist-gpu/gke/size-2/simple.yaml)
+```
+
+### 1 node
+```
+cd size-1
+
+for i in $(seq 1 5); do     
+  echo "Running iteration $i"
+  kubectl apply -f ../simple-1node.yaml
+  sleep 20
+  kubectl logs pytorch-mnist-master-0 -f | tee mnist-master-1-iter-${i}.out
+  kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
+  kubectl delete -f ../simple-1node.yaml --wait
+done
+
+```
+
+### 2 nodes
+```
 git clone https://github.com/converged-computing/aks-infiniband-install ./infiniband
 kubectl apply -f infiniband/driver-installation-with-gpu.yaml
 ...TODO on 2 nodes
 
-```
-## mnist
-```
-#from https://github.com/converged-computing/google-performance-study/blob/main/experiments/usernetes/mnist-gpu/gke/size-2/simple.yaml
-kubectl apply -f 1node.yaml
-kubectl apply -f 1node.yaml
-sleep 30
-kubectl logs pytorch-mnist-master-0 -f | tee ./$outdir/mnist-master-$size-iter-1.out
-kubectl delete -f simple.yaml --wait
+cd size-2
 
+for i in $(seq 1 5); do     
+  echo "Running iteration $i"
+  kubectl apply -f ../simple-2nodes.yaml
+  sleep 20
+  kubectl logs pytorch-mnist-master-0 -f |& tee mnist-master-$size-iter-${i}.out
+  kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
+  kubectl delete -f simple.yaml --wait
+done
 ```
-## resnet
+
+### 4 nodes
 ```
-#https://github.com/converged-computing/usernetes-azure/blob/main/experiments/crd/resnet.yaml
-kubectl apply -f resnet.yaml
-kubectl exec -ti flux-sample-0-kqs4p -- /bin/bash
-export FLUX_URI=local:///mnt/flux/view/run/flux/local
-git clone https://github.com/converged-computing/usernetes-azure
+cd size-4
 
-export OMPI_MCA_pml=ucx
-export UCX_TLS=rc,sm
-export OMPI_MCA_btl=^vader,tcp,openib,uct
-export OMPI_MCA_spml=ucx
-export OMPI_MCA_osc=ucx
-time flux run -N1 -n 40 -o cpu-affinity=per-task python /opt/usernetes-azure/docker/resnet-mpi/main.py --backend=nccl --use_syn --batch_size=128 --arch=resnet18
-//not meant for GPUs
-
-#https://github.com/converged-computing/performance-study/blob/45642807dcc995669cda53230a0a94bfe6c833a0/experiments/aws/eks/gpu/crd/resnet.yaml#L16
-kubectl apply -f resnet.yaml
-kubectl exec -ti flux-sample-0-kqs4p -- /bin/bash
-export FLUX_URI=local:///mnt/flux/view/run/flux/local
-flux submit ...
-//torchvision is not installed, does not work
-//trying with the image from the above resnet.yaml gives this error:
-//job.exception type=alloc severity=0 sched-simple does not support resource type 'gpu'
+for i in $(seq 1 5); do     
+  echo "Running iteration $i"
+  kubectl apply -f ../simple-4nodes.yaml
+  sleep 20
+  kubectl logs pytorch-mnist-master-0 -f |& tee mnist-master-$size-iter-${i}.out
+  kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
+  kubectl delete -f simple.yaml --wait
+done
 ```
 
 # Usernetes GPU azure
@@ -409,7 +419,4 @@ for i in $(seq 1 5); do
   kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
   kubectl delete -f simple.yaml --wait
 done
-```
-
-
 ```
