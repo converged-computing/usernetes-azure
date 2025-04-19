@@ -1,4 +1,4 @@
-# AKS setup and preliminary tests
+# AKS setup
 
 ```
 az aks create \
@@ -101,6 +101,11 @@ flux submit ...
 ## Lauching the VMs
 - Same setup as regular Usernetes in Azure interface
 - change start_script.sh to remove DefaultLimitMEMLOCK=infinity (start-script file will be created here)
+- Spec:
+Image
+flux/flux-usernetes-gpu/0.0.1 - Gen2
+Size
+Standard NC64as T4 v3 (64 vcpus, 440 GiB memory)
 
 ## Installing GPU drivers in Ubuntu on Azure
 #https://learn.microsoft.com/en-us/azure/virtual-machines/linux/n-series-driver-setup#install-cuda-drivers-on-n-series-vms
