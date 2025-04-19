@@ -112,11 +112,6 @@ done
 ## Lauching the VMs
 - Same setup as regular Usernetes in Azure interface
 - change start_script.sh to remove DefaultLimitMEMLOCK=infinity (start-script file will be created here)
-- Spec:
-Image
-flux/flux-usernetes-gpu/0.0.1 - Gen2
-Size
-Standard NC64as T4 v3 (64 vcpus, 440 GiB memory)
 
 ## Installing GPU drivers in Ubuntu on Azure
 #https://learn.microsoft.com/en-us/azure/virtual-machines/linux/n-series-driver-setup#install-cuda-drivers-on-n-series-vms
@@ -299,6 +294,8 @@ flux exec -r 1 --dir /home/azureuser/flux-usernetes/google/gpu make up
 flux exec -r 1 --dir /home/azureuser/flux-usernetes/google/gpu make nvidia
 flux exec -r 1 --dir /home/azureuser/flux-usernetes/google/gpu make kubeadm-join
 
+make sync-external-ip
+
 kubectl taint node u7s-flux-usernetes node-role.kubernetes.io/control-plane:NoSchedule-
 
 kubectl apply -f nvidia-device-plugin.yaml
@@ -392,9 +389,9 @@ for i in $(seq 1 5); do
   echo "Running iteration $i"
   kubectl apply -f ./simple-1node.yaml
   sleep 20
-  kubectl logs pytorch-mnist-master-0 -f |& tee ./$outdir/mnist-master-$size-iter-${i}.out
+  kubectl logs pytorch-mnist-master-0 -f | tee ./$outdir/mnist-master-$size-iter-${i}.out
   kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
-  kubectl delete -f simple.yaml --wait
+  kubectl delete -f ./simple-1node.yaml --wait
 done
 
 ```
@@ -409,9 +406,9 @@ for i in $(seq 1 5); do
   echo "Running iteration $i"
   kubectl apply -f ./simple-2nodes.yaml
   sleep 20
-  kubectl logs pytorch-mnist-master-0 -f |& tee ./$outdir/mnist-master-$size-iter-${i}.out
+  kubectl logs pytorch-mnist-master-0 -f | tee ./$outdir/mnist-master-$size-iter-${i}.out
   kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
-  kubectl delete -f simple.yaml --wait
+  kubectl delete -f ./simple-2nodes.yaml --wait
 done
 ```
 
@@ -425,8 +422,8 @@ for i in $(seq 1 5); do
   echo "Running iteration $i"
   kubectl apply -f ./simple-4nodes.yaml
   sleep 20
-  kubectl logs pytorch-mnist-master-0 -f |& tee ./$outdir/mnist-master-$size-iter-${i}.out
+  kubectl logs pytorch-mnist-master-0 -f | tee ./$outdir/mnist-master-$size-iter-${i}.out
   kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
-  kubectl delete -f simple.yaml --wait
+  kubectl delete -f ./simple-4nodes.yaml --wait
 done
 ```
