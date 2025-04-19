@@ -358,15 +358,57 @@ kubectl  get nodes -o json | jq -r .items[].status.capacity
 ## Experiments
 
 ```
-simple.yaml
-
-```
-
-```
 kubectl apply --server-side -k "github.com/kubeflow/training-operator.git/manifests/overlays/standalone?ref=v1.8.1"
-kubectl apply -f simple.yaml (simple.yaml from flux-usernetes/google/gpu)
+(simple.yaml from https://github.com/converged-computing/google-performance-study/blob/main/experiments/usernetes/mnist-gpu/gke/size-2/simple.yaml)
 ```
 
+### 1 node
+```
+outdir=./data
+size=1
+mkdir -p $outdir
+
+for i in $(seq 1 5); do     
+  echo "Running iteration $i"
+  kubectl apply -f ./simple-1node.yaml
+  sleep 20
+  kubectl logs pytorch-mnist-master-0 -f |& tee ./$outdir/mnist-master-$size-iter-${i}.out
+  kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
+  kubectl delete -f simple.yaml --wait
+done
+
+```
+
+### 2 nodes
+```
+outdir=./data
+size=2
+mkdir -p $outdir
+
+for i in $(seq 1 5); do     
+  echo "Running iteration $i"
+  kubectl apply -f ./simple-2nodes.yaml
+  sleep 20
+  kubectl logs pytorch-mnist-master-0 -f |& tee ./$outdir/mnist-master-$size-iter-${i}.out
+  kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
+  kubectl delete -f simple.yaml --wait
+done
+```
+
+### 4 nodes
+```
+outdir=./data
+size=4
+mkdir -p $outdir
+
+for i in $(seq 1 5); do     
+  echo "Running iteration $i"
+  kubectl apply -f ./simple-4nodes.yaml
+  sleep 20
+  kubectl logs pytorch-mnist-master-0 -f |& tee ./$outdir/mnist-master-$size-iter-${i}.out
+  kubectl wait --for=condition=succeeded --timeout=1200s pytorchjobs.kubeflow.org/pytorch-mnist
+  kubectl delete -f simple.yaml --wait
+done
 ```
 
 
