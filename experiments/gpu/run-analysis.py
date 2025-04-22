@@ -100,7 +100,7 @@ def parse_data(indir, outdir, files):
         results = list(ps.get_outfiles(dirname))
 
         # We drop the first iteration - we had to pull containers
-        results = [x for x in results if "iter-1-" not in x]
+        results = [x for x in results]
         for result in results:
 
             # Basename that start with underscore are test or otherwise should not be included
@@ -120,7 +120,6 @@ def parse_data(indir, outdir, files):
                     metric_value = float(
                         metric.split(",")[-1].split(":")[-1].strip().replace("}", "")
                     )
-                    print(f"epoch_{i}_{metric_name}")
                     p.add_result(f"epoch_{i}_{metric_name}", metric_value)
 
     print("Done parsing study data")
@@ -147,7 +146,6 @@ def plot_results(df, outdir):
     # Within a setup, compare between experiments for GPU and cpu
     for metric in df.metric.unique():
         subset = df[df.metric == metric]
-        print(subset)
         title = " ".join([x.capitalize() for x in metric.split("_")])
         if metric == "time_seconds":
             y_label = "Time (Seconds)"
