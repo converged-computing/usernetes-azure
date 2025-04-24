@@ -11,8 +11,15 @@ spec:
         spec:
           containers:
             - name: pytorch
-              image: ghcr.io/converged-computing/pytorch-mnist:fashion
+              image: ghcr.io/converged-computing/usernetes-azure:pytorch-gpu-ib
               imagePullPolicy: IfNotPresent
+              env:
+                - name : "NCCL_DEBUG"
+                  value: "INFO"
+                - name: "NCCL_DEBUG_SUBSYS:"
+                  value: "INIT,NET"
+                - name: "NCCL_NET"
+                  value: "IB"
               resources:
                 limits:
                   nvidia.com/gpu: 8
@@ -31,7 +38,7 @@ spec:
         spec:
           containers:
             - name: pytorch
-              image: ghcr.io/converged-computing/pytorch-mnist:fashion
+              image: ghcr.io/converged-computing/usernetes-azure:pytorch-gpu-ib
               resources:
                 limits:
                   nvidia.com/gpu: 8
