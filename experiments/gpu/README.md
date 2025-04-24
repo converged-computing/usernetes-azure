@@ -434,6 +434,7 @@ Look at what's going on:
 export NCCL_DEBUG=INFO
 export NCCL_DEBUG_SUBSYS=INIT,NET
 ibv_devinfo
+ofed_info -s
 ```
 Force RDMA for NCCL:
 ```
