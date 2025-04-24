@@ -444,4 +444,21 @@ export NCCL_SOCKET_IFNAME=^eth0
 #export NCCL_IB_CUDA_SUPPORT=1
 ```
 
+Network Operator:
+```
+curl -fsSL -o get_helm.sh
+https://raw.githubusercontent.com/helm/helm/master/scripts/get helm-3 && chmod 700 get_helm.sh && ./get_helm.sh
+
+kubectl get nodes -o json | jq '.items[].metadata.labels | keys | any(startswith("feature.node.kubernetes.io"))'
+=> if enabled, set nfd.enabled=false Helm value, otherwise automatically deployed
+
+helm repo add nvidia https://helm.ngc.nvidia.com/nvidia
+helm repo update
+
+kubectl create ns nvidia-network-operator
+helm show values nvidia/network-operator --version v25.1.0 > values.yaml
+helm install network-operator nvidia/network-operator -n nvidia-network-operator --create-namespace --version v25.1.0 -f ./values.yaml --wait
+
+values.yaml : Network Operator Deployment for GPUDirect Workloads
+```
 
