@@ -427,3 +427,20 @@ for i in $(seq 1 5); do
   kubectl delete -f ./simple-4nodes.yaml --wait
 done
 ```
+
+### Debugging
+Look at what's going on:
+```
+export NCCL_DEBUG=INFO
+export NCCL_DEBUG_SUBSYS=INIT,NET
+ibv_devinfo
+```
+Force RDMA for NCCL:
+```
+export NCCL_IB_DISABLE=0
+#export NCCL_NET_GDR_LEVEL=2
+export NCCL_SOCKET_IFNAME=^eth0
+#export NCCL_IB_CUDA_SUPPORT=1
+```
+
+
