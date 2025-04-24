@@ -260,12 +260,12 @@ docker info | grep root OK
 cd /home/azureuser/
 git clone https://github.com/converged-computing/flux-usernetes/
 
-#We need to redo this if we changed the number of GPUs
-sudo nvidia-ctk runtime configure --runtime=docker --cdi.enabled --config=/etc/docker/daemon.json
-sudo nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml --device-name-strategy=uuid
-nvidia-ctk cdi list
-sudo nvidia-ctk config --in-place --set nvidia-container-runtime.mode=cdi
-systemctl restart --user docker.service
+#this block only if we changed the number of GPUs
+#sudo nvidia-ctk runtime configure --runtime=docker --cdi.enabled --config=/etc/docker/daemon.json
+#sudo nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml --device-name-strategy=uuid
+#nvidia-ctk cdi list
+#sudo nvidia-ctk config --in-place --set nvidia-container-runtime.mode=cdi
+#systemctl restart --user docker.service
 
 cd flux-usernetes/google/gpu
 cp -R ../../../usernetes/Dockerfile.d .
@@ -286,7 +286,6 @@ export KUBECONFIG=/home/azureuser/flux-usernetes/google/gpu/kubeconfig
 kubectl get pods -A
 
 #if we have more than 1 instance
-#does not work
 make join-command
 flux archive create --name=join-command --mmap -C /home/azureuser/flux-usernetes/google/gpu join-command
 flux exec -r 1 flux archive extract --overwrite --name=join-command -C /home/azureuser/flux-usernetes/google/gpu
