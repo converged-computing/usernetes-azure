@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
             - name: pytorch
-              image: ghcr.io/converged-computing/pytorch-mnist:fashion
+              image: ghcr.io/converged-computing/usernetes-azure:pytorch-gpu-ib
               imagePullPolicy: IfNotPresent
               env:
                 - name : "NCCL_DEBUG"
