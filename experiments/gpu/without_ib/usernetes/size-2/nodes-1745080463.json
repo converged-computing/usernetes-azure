@@ -1,0 +1,495 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"5a:33:89:61:38:10\"}",
+                    "flannel.alpha.coreos.com/backend-type": "vxlan",
+                    "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+                    "flannel.alpha.coreos.com/public-ip": "172.19.0.4",
+                    "flannel.alpha.coreos.com/public-ip-overwrite": "172.19.0.4",
+                    "kubeadm.alpha.kubernetes.io/cri-socket": "unix:///var/run/containerd/containerd.sock",
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2025-04-19T16:09:56Z",
+                "labels": {
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/os": "linux",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "u7s-flux-user000000",
+                    "kubernetes.io/os": "linux",
+                    "node-role.kubernetes.io/control-plane": "",
+                    "node.kubernetes.io/exclude-from-external-load-balancers": "",
+                    "usernetes/host-ip": "172.19.0.4"
+                },
+                "name": "u7s-flux-user000000",
+                "resourceVersion": "3134",
+                "uid": "c09e5545-fee1-4883-a980-7568e0f0002e"
+            },
+            "spec": {
+                "podCIDR": "10.244.0.0/24",
+                "podCIDRs": [
+                    "10.244.0.0/24"
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "172.19.0.4",
+                        "type": "ExternalIP"
+                    }
+                ],
+                "allocatable": {
+                    "cpu": "40",
+                    "ephemeral-storage": "118810356745",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "693397300Ki",
+                    "nvidia.com/gpu": "8",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "cpu": "40",
+                    "ephemeral-storage": "128917488Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "693499700Ki",
+                    "nvidia.com/gpu": "8",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2025-04-19T16:10:44Z",
+                        "lastTransitionTime": "2025-04-19T16:10:44Z",
+                        "message": "Flannel is running on this node",
+                        "reason": "FlannelIsUp",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T16:30:35Z",
+                        "lastTransitionTime": "2025-04-19T16:09:55Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T16:30:35Z",
+                        "lastTransitionTime": "2025-04-19T16:09:55Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T16:30:35Z",
+                        "lastTransitionTime": "2025-04-19T16:09:55Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T16:30:35Z",
+                        "lastTransitionTime": "2025-04-19T16:10:43Z",
+                        "message": "kubelet is posting ready status",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 10250
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "ghcr.io/converged-computing/usernetes-azure@sha256:3b366e4d70a0e6159b391ff8b3f4de9b0a0972af6a14bb928a1077c347d95f7e",
+                            "ghcr.io/converged-computing/usernetes-azure:osu"
+                        ],
+                        "sizeBytes": 2164616929
+                    },
+                    {
+                        "names": [
+                            "ghcr.io/converged-computing/pytorch-mnist@sha256:7260cff5cbe63e33637dc885b3d0d53e4b09ce8a3c8e8f51e113459527326787",
+                            "ghcr.io/converged-computing/pytorch-mnist:fashion"
+                        ],
+                        "sizeBytes": 915653673
+                    },
+                    {
+                        "names": [
+                            "ghcr.io/converged-computing/flux-view-rocky@sha256:edca488bf0d08fbbd68af1c6520d3da7f1f0de76793e884ce97565d9216fc304",
+                            "ghcr.io/converged-computing/flux-view-rocky:tag-9"
+                        ],
+                        "sizeBytes": 234951572
+                    },
+                    {
+                        "names": [
+                            "nvcr.io/nvidia/k8s-device-plugin@sha256:7089559ce6153018806857f5049085bae15b3bf6f1c8bd19d8b12f707d087dea",
+                            "nvcr.io/nvidia/k8s-device-plugin:v0.17.0"
+                        ],
+                        "sizeBytes": 187560257
+                    },
+                    {
+                        "names": [
+                            "registry.k8s.io/etcd@sha256:c6a9d11cc5c04b114ccdef39a9265eeef818e3d02f5359be035ae784097fdec5",
+                            "registry.k8s.io/etcd:3.5.16-0"
+                        ],
+                        "sizeBytes": 57680541
+                    },
+                    {
+                        "names": [
+                            "registry.k8s.io/kube-proxy@sha256:5015269547a0b7dd2c062758e9a64467b58978ff2502cad4c3f5cdf4aa554ad3",
+                            "registry.k8s.io/kube-proxy:v1.32.3"
+                        ],
+                        "sizeBytes": 30917204
+                    },
+                    {
+                        "names": [
+                            "ghcr.io/flannel-io/flannel@sha256:b4dcecb6192041d99f57999d70e101c22536c2b058b99f6d00497ca99c470f53",
+                            "ghcr.io/flannel-io/flannel:v0.26.4"
+                        ],
+                        "sizeBytes": 29665230
+                    },
+                    {
+                        "names": [
+                            "registry.k8s.io/kube-apiserver@sha256:279e45cf07e4f56925c3c5237179eb63616788426a96e94df5fedf728b18926e",
+                            "registry.k8s.io/kube-apiserver:v1.32.3"
+                        ],
+                        "sizeBytes": 28679230
+                    },
+                    {
+                        "names": [
+                            "registry.k8s.io/kube-controller-manager@sha256:54456a96a1bbdc35dcc2e70fcc1355bf655af67694e40b650ac12e83521f6411",
+                            "registry.k8s.io/kube-controller-manager:v1.32.3"
+                        ],
+                        "sizeBytes": 26267292
+                    },
+                    {
+                        "names": [
+                            "registry.k8s.io/kube-scheduler@sha256:aafae2e3a8d65bc6dc3a0c6095c24bc72b1ff608e1417f0f5e860ce4a61c27df",
+                            "registry.k8s.io/kube-scheduler:v1.32.3"
+                        ],
+                        "sizeBytes": 20659045
+                    },
+                    {
+                        "names": [
+                            "registry.k8s.io/coredns/coredns@sha256:9caabbf6238b189a65d0d6e6ac138de60d6a1c419e5a341fbbb7c78382559c6e",
+                            "registry.k8s.io/coredns/coredns:v1.11.3"
+                        ],
+                        "sizeBytes": 18562039
+                    },
+                    {
+                        "names": [
+                            "ghcr.io/flannel-io/flannel-cni-plugin@sha256:f1812994f0edbcb5bb5ccb63be2147ba6ad10e1faaa7ca9fcdad4f441739d84f",
+                            "ghcr.io/flannel-io/flannel-cni-plugin:v1.6.2-flannel1"
+                        ],
+                        "sizeBytes": 4856838
+                    },
+                    {
+                        "names": [
+                            "docker.io/library/alpine@sha256:451eee8bedcb2f029756dc3e9d73bab0e7943c1ac55cff3a4861c52a0fdd3e98",
+                            "docker.io/library/alpine:3.10"
+                        ],
+                        "sizeBytes": 2801976
+                    },
+                    {
+                        "names": [
+                            "registry.k8s.io/pause@sha256:ee6521f290b2168b6e0935a181d4cff9be1ac3f505666ef0e3c98fae8199917a",
+                            "registry.k8s.io/pause:3.10"
+                        ],
+                        "sizeBytes": 320368
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "279add7e-e468-4f87-bb14-aef5fcf4b211",
+                    "containerRuntimeVersion": "containerd://2.0.2",
+                    "kernelVersion": "6.11.0-1012-azure",
+                    "kubeProxyVersion": "v1.32.1",
+                    "kubeletVersion": "v1.32.1",
+                    "machineID": "dd48e6022ef54c2ca6c6cca2ef8ba599",
+                    "operatingSystem": "linux",
+                    "osImage": "Debian GNU/Linux 12 (bookworm)",
+                    "systemUUID": "d8c47a06-d27b-4946-84ea-f08a5b95cbfc"
+                },
+                "runtimeHandlers": [
+                    {
+                        "features": {
+                            "recursiveReadOnlyMounts": true,
+                            "userNamespaces": true
+                        },
+                        "name": "runc"
+                    },
+                    {
+                        "features": {
+                            "recursiveReadOnlyMounts": true,
+                            "userNamespaces": true
+                        },
+                        "name": "nvidia"
+                    },
+                    {
+                        "features": {
+                            "recursiveReadOnlyMounts": true,
+                            "userNamespaces": true
+                        },
+                        "name": ""
+                    },
+                    {
+                        "features": {
+                            "recursiveReadOnlyMounts": true,
+                            "userNamespaces": true
+                        },
+                        "name": "test-handler"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"52:26:a0:07:60:6e\"}",
+                    "flannel.alpha.coreos.com/backend-type": "vxlan",
+                    "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+                    "flannel.alpha.coreos.com/public-ip": "172.19.0.5",
+                    "flannel.alpha.coreos.com/public-ip-overwrite": "172.19.0.5",
+                    "kubeadm.alpha.kubernetes.io/cri-socket": "unix:///var/run/containerd/containerd.sock",
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2025-04-19T16:14:15Z",
+                "labels": {
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/os": "linux",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "u7s-flux-user000001",
+                    "kubernetes.io/os": "linux",
+                    "usernetes/host-ip": "172.19.0.5"
+                },
+                "name": "u7s-flux-user000001",
+                "resourceVersion": "3170",
+                "uid": "916b1516-f74f-48b1-aab1-1cbc54fe5c0a"
+            },
+            "spec": {
+                "podCIDR": "10.244.1.0/24",
+                "podCIDRs": [
+                    "10.244.1.0/24"
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "172.19.0.5",
+                        "type": "ExternalIP"
+                    }
+                ],
+                "allocatable": {
+                    "cpu": "40",
+                    "ephemeral-storage": "118810356745",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "693397300Ki",
+                    "nvidia.com/gpu": "8",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "cpu": "40",
+                    "ephemeral-storage": "128917488Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "693499700Ki",
+                    "nvidia.com/gpu": "8",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2025-04-19T16:14:54Z",
+                        "lastTransitionTime": "2025-04-19T16:14:54Z",
+                        "message": "Flannel is running on this node",
+                        "reason": "FlannelIsUp",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T16:30:54Z",
+                        "lastTransitionTime": "2025-04-19T16:14:15Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T16:30:54Z",
+                        "lastTransitionTime": "2025-04-19T16:14:15Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T16:30:54Z",
+                        "lastTransitionTime": "2025-04-19T16:14:15Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2025-04-19T16:30:54Z",
+                        "lastTransitionTime": "2025-04-19T16:14:21Z",
+                        "message": "kubelet is posting ready status",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 10250
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "ghcr.io/converged-computing/usernetes-azure@sha256:3b366e4d70a0e6159b391ff8b3f4de9b0a0972af6a14bb928a1077c347d95f7e",
+                            "ghcr.io/converged-computing/usernetes-azure:osu"
+                        ],
+                        "sizeBytes": 2164616929
+                    },
+                    {
+                        "names": [
+                            "ghcr.io/converged-computing/pytorch-mnist@sha256:7260cff5cbe63e33637dc885b3d0d53e4b09ce8a3c8e8f51e113459527326787",
+                            "ghcr.io/converged-computing/pytorch-mnist:fashion"
+                        ],
+                        "sizeBytes": 915653673
+                    },
+                    {
+                        "names": [
+                            "ghcr.io/converged-computing/flux-view-rocky@sha256:edca488bf0d08fbbd68af1c6520d3da7f1f0de76793e884ce97565d9216fc304",
+                            "ghcr.io/converged-computing/flux-view-rocky:tag-9"
+                        ],
+                        "sizeBytes": 234951572
+                    },
+                    {
+                        "names": [
+                            "nvcr.io/nvidia/k8s-device-plugin@sha256:7089559ce6153018806857f5049085bae15b3bf6f1c8bd19d8b12f707d087dea",
+                            "nvcr.io/nvidia/k8s-device-plugin:v0.17.0"
+                        ],
+                        "sizeBytes": 187560257
+                    },
+                    {
+                        "names": [
+                            "ghcr.io/flux-framework/flux-operator@sha256:2984ff02db371e77ac587dcfb0ec854d81c1e2e9642ec16bba3cd15aeb56ae0a",
+                            "ghcr.io/flux-framework/flux-operator:latest"
+                        ],
+                        "sizeBytes": 134494992
+                    },
+                    {
+                        "names": [
+                            "registry.k8s.io/kube-proxy@sha256:5015269547a0b7dd2c062758e9a64467b58978ff2502cad4c3f5cdf4aa554ad3",
+                            "registry.k8s.io/kube-proxy:v1.32.3"
+                        ],
+                        "sizeBytes": 30917204
+                    },
+                    {
+                        "names": [
+                            "ghcr.io/flannel-io/flannel@sha256:b4dcecb6192041d99f57999d70e101c22536c2b058b99f6d00497ca99c470f53",
+                            "ghcr.io/flannel-io/flannel:v0.26.4"
+                        ],
+                        "sizeBytes": 29665230
+                    },
+                    {
+                        "names": [
+                            "docker.io/kubeflow/training-operator@sha256:dabb76dbda29ff822e5f08d7c130505b2ed17ee29c60af4185efc756a166c915",
+                            "docker.io/kubeflow/training-operator:v1-04f9f13"
+                        ],
+                        "sizeBytes": 28737687
+                    },
+                    {
+                        "names": [
+                            "gcr.io/kubebuilder/kube-rbac-proxy@sha256:0df4ae70e3bd0feffcec8f5cdb428f4abe666b667af991269ec5cb0bbda65869",
+                            "gcr.io/kubebuilder/kube-rbac-proxy:v0.11.0"
+                        ],
+                        "sizeBytes": 19194567
+                    },
+                    {
+                        "names": [
+                            "ghcr.io/flannel-io/flannel-cni-plugin@sha256:f1812994f0edbcb5bb5ccb63be2147ba6ad10e1faaa7ca9fcdad4f441739d84f",
+                            "ghcr.io/flannel-io/flannel-cni-plugin:v1.6.2-flannel1"
+                        ],
+                        "sizeBytes": 4856838
+                    },
+                    {
+                        "names": [
+                            "docker.io/library/alpine@sha256:451eee8bedcb2f029756dc3e9d73bab0e7943c1ac55cff3a4861c52a0fdd3e98",
+                            "docker.io/library/alpine:3.10"
+                        ],
+                        "sizeBytes": 2801976
+                    },
+                    {
+                        "names": [
+                            "registry.k8s.io/pause@sha256:ee6521f290b2168b6e0935a181d4cff9be1ac3f505666ef0e3c98fae8199917a",
+                            "registry.k8s.io/pause:3.10"
+                        ],
+                        "sizeBytes": 320368
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "d7befcb1-b1fd-4f9d-adcd-0f6f24fb03e1",
+                    "containerRuntimeVersion": "containerd://2.0.2",
+                    "kernelVersion": "6.11.0-1012-azure",
+                    "kubeProxyVersion": "v1.32.1",
+                    "kubeletVersion": "v1.32.1",
+                    "machineID": "1d27967e6ced4c418a6c5968a35c49ec",
+                    "operatingSystem": "linux",
+                    "osImage": "Debian GNU/Linux 12 (bookworm)",
+                    "systemUUID": "831e10e8-f555-489a-9c43-2eb0f2537fdf"
+                },
+                "runtimeHandlers": [
+                    {
+                        "features": {
+                            "recursiveReadOnlyMounts": true,
+                            "userNamespaces": true
+                        },
+                        "name": "runc"
+                    },
+                    {
+                        "features": {
+                            "recursiveReadOnlyMounts": true,
+                            "userNamespaces": true
+                        },
+                        "name": "nvidia"
+                    },
+                    {
+                        "features": {
+                            "recursiveReadOnlyMounts": true,
+                            "userNamespaces": true
+                        },
+                        "name": ""
+                    },
+                    {
+                        "features": {
+                            "recursiveReadOnlyMounts": true,
+                            "userNamespaces": true
+                        },
+                        "name": "test-handler"
+                    }
+                ]
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}
