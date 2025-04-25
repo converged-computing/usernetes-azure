@@ -16,7 +16,7 @@ spec:
               env:
                 - name : "NCCL_DEBUG"
                   value: "INFO"
-                - name: "NCCL_DEBUG_SUBSYS:"
+                - name: "NCCL_DEBUG_SUBSYS"
                   value: "INIT,NET"
                 - name: "NCCL_NET"
                   value: "IB"
