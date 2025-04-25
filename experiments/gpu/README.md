@@ -435,29 +435,33 @@ export NCCL_DEBUG_SUBSYS=INIT,NET
 ibv_devinfo
 ofed_info -s
 ```
-Force RDMA for NCCL:
+Result:
 ```
-export NCCL_IB_DISABLE=0
-#export NCCL_NET_GDR_LEVEL=2
-export NCCL_SOCKET_IFNAME=^eth0
-#export NCCL_IB_CUDA_SUPPORT=1
+Using CUDA
+Using distributed PyTorch with nccl backend
+2025-04-24T15:44:04Z INFO     Added key: store_based_barrier_key:1 to store for rank: 0
+2025-04-24T15:44:04Z INFO     Rank 0: Completed store-based barrier for key:store_based_barrier_key:1 with 2 nodes.
+pytorch-mnist-master-0:40:40 [0] NCCL INFO Bootstrap : Using eth0:10.244.1.4<0>
+pytorch-mnist-master-0:40:40 [0] NCCL INFO NET/Plugin : No plugin found (libnccl-net.so), using internal implementation
+
+pytorch-mnist-master-0:40:40 [0] misc/ibvwrap.cc:63 NCCL WARN Failed to open libibverbs.so[.1]
+pytorch-mnist-master-0:40:40 [0] NCCL INFO NET/Socket : Using [0]eth0:10.244.1.4<0>
+pytorch-mnist-master-0:40:40 [0] NCCL INFO Using network Socket
+NCCL version 2.10.3+cuda10.2
+pytorch-mnist-master-0:40:125 [0] NCCL INFO Channel 00/02 :    0   1
+pytorch-mnist-master-0:40:125 [0] NCCL INFO Channel 01/02 :    0   1
+pytorch-mnist-master-0:40:125 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] -1/-1/-1->0->1
+pytorch-mnist-master-0:40:125 [0] NCCL INFO Setting affinity for GPU 0 to 0fffff
+pytorch-mnist-master-0:40:125 [0] NCCL INFO Channel 00 : 1[100000] -> 0[100000] [receive] via NET/Socket/0
+pytorch-mnist-master-0:40:125 [0] NCCL INFO Channel 01 : 1[100000] -> 0[100000] [receive] via NET/Socket/0
+pytorch-mnist-master-0:40:125 [0] NCCL INFO Channel 00 : 0[100000] -> 1[100000] [send] via NET/Socket/0
+pytorch-mnist-master-0:40:125 [0] NCCL INFO Channel 01 : 0[100000] -> 1[100000] [send] via NET/Socket/0
+pytorch-mnist-master-0:40:125 [0] NCCL INFO Connected all rings
+pytorch-mnist-master-0:40:125 [0] NCCL INFO Connected all trees
+pytorch-mnist-master-0:40:125 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 8/8/512
+pytorch-mnist-master-0:40:125 [0] NCCL INFO 2 coll channels, 2 p2p channels, 1 p2p channels per peer
+pytorch-mnist-master-0:40:125 [0] NCCL INFO comm 0x7a9f48001360 rank 0 nranks 2 cudaDev 0 busId 100000 - Init COMPLETE
+pytorch-mnist-master-0:40:40 [0] NCCL INFO Launch mode Parallel
 ```
 
-Network Operator (only if there are irregularities in tests before):
-```
-curl -fsSL -o get_helm.sh
-https://raw.githubusercontent.com/helm/helm/master/scripts/get helm-3 && chmod 700 get_helm.sh && ./get_helm.sh
-
-kubectl get nodes -o json | jq '.items[].metadata.labels | keys | any(startswith("feature.node.kubernetes.io"))'
-=> if enabled, set nfd.enabled=false Helm value, otherwise automatically deployed
-
-helm repo add nvidia https://helm.ngc.nvidia.com/nvidia
-helm repo update
-
-kubectl create ns nvidia-network-operator
-helm show values nvidia/network-operator --version v25.1.0 > values.yaml
-helm install network-operator nvidia/network-operator -n nvidia-network-operator --create-namespace --version v25.1.0 -f ./values.yaml --wait
-
-values.yaml : Network Operator Deployment for GPUDirect Workloads
-```
 
