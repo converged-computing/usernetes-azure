@@ -18,6 +18,8 @@ spec:
                   value: "INFO"
                 - name: "NCCL_DEBUG_SUBSYS"
                   value: "INIT,NET"
+                - name: "NCCL_NET"
+                  value: "IB"
               resources:
                 limits:
                   nvidia.com/gpu: 8
@@ -28,7 +30,7 @@ spec:
               command:
                 - "/bin/bash"
                 - "-c"
-                - "sleep 30; time python3 /opt/pytorch-mnist/mnist.py --epochs=4 --backend=nccl --batch-size=128"
+                - "time python3 /opt/pytorch-mnist/mnist.py --epochs=4 --backend=nccl --batch-size=128"
     Worker:
       replicas: 3
       restartPolicy: OnFailure

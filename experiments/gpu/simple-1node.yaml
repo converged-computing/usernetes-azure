@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
             - name: pytorch
-              image: ghcr.io/converged-computing/usernetes-azure:pytorch-gpu-ib
+              image: docker.io/milkshake113/mnist-time-2
               imagePullPolicy: IfNotPresent
               env:
                 - name : "NCCL_DEBUG"
