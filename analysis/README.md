@@ -1,20 +1,22 @@
 ## Get data
-Exemple to fetch data from oras (same process for all benchmarks, this is for OSU):
+```
+mkdir -p data/bare
+mkdir -p data/usernetes
+oras pull ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-osu_allreduce
+oras pull ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-osu_pt2pt_exclusive
+oras pull ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-lammps
+oras pull ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-amg
+oras pull ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-minife
+mv results/* data/bare/
+oras pull ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-osu_allreduce
+oras pull ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-osu_pt2pt_exclusive
+oras pull ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-lammps
+oras pull ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-amg
+oras pull ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-minife
+mv results/* data/usernetes/
+```
 
 ```
-app=XXX
-oras pull ghcr.io/converged-computing/usernetes-azure/performance:azure-bare-$app
-mkdir results/$app/bare
-mv results/$app/*.* results/$app/bare/
-oras pull ghcr.io/converged-computing/usernetes-azure/performance:azure-usernetes-$app
-mkdir results/$app/bare
-mv results/$app/*.* results/$app/usernetes
-```
-
-```
-Then for most benchmarks, run first:
-./parse.sh
-And then report the data to graph.py (by hand)
-Current data in graph.py is up to date.
+python3 analysis.py
 ```
 
