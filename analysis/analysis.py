@@ -8,7 +8,7 @@ BASE_DIR = 'data'
 
 platforms = ['bare', 'usernetes']
 
-applications = ['osu_allreduce', 'lammps', 'amg', 'minife', 'osu_latency', 'osu_bw']
+applications = ['osu_allreduce', 'lammps', 'lammps_time', 'amg', 'minife', 'osu_latency', 'osu_bw']
 
 osu_latency_pattern = re.compile(r'osu_latency-(\d+)-iter-(\d+)-.*\.out')
 osu_bandwidth_pattern = re.compile(r'osu_bw-(\d+)-iter-(\d+)-.*\.out')
@@ -53,6 +53,23 @@ def extract_lammps_value(filepath):
                     return None
     return None
 
+def extract_lammps_time(filepath):
+    with open(filepath, 'r') as f:
+        for line in f:
+            if line.startswith('Total wall time:'):
+                try:
+                    match = re.search(r"(\d+):(\d+):(\d+)", line)
+                    if match:
+                        hours, minutes, seconds = map(int, match.groups())
+                        total_seconds = hours * 3600 + minutes * 60 + seconds
+                        return total_seconds
+                    else:
+                        print("No time found.")
+                        return None
+                except (IndexError, ValueError):
+                    return None
+    return None
+
 def extract_amg_value(filepath):
     with open(filepath, 'r') as f:
         for line in f:
@@ -84,6 +101,8 @@ for platform in platforms:
        directory = os.path.join(BASE_DIR, platform, app)
        if app == 'osu_latency' or app == 'osu_bw':
            directory = os.path.join(BASE_DIR, platform, 'osu_pt2pt')
+       if app == 'lammps_time':
+           directory = os.path.join(BASE_DIR, platform, 'lammps')
        if not os.path.exists(directory):
            print(f"Directory not found: {directory}")
            continue
@@ -130,6 +149,16 @@ for platform in platforms:
                        records.append((platform, app, size, iteration, value))
                    else:
                        print(f"Warning: No value found in {filepath}")
+           elif app == 'lammps_time':
+               match = lammps_pattern.match(filename)
+               if match:
+                   size = int(match.group(1))
+                   iteration = int(match.group(2))
+                   value = extract_lammps_time(filepath)
+                   if value is not None:
+                       records.append((platform, app, size, iteration, value))
+                   else:
+                       print(f"Warning: No value found in {filepath}")
            elif app == 'amg':
                match = amg_pattern.match(filename)
                if match:
@@ -153,7 +182,6 @@ for platform in platforms:
                         print(f"Warning: No value found in {filepath}")
 
 df = pd.DataFrame(records, columns=['Platform','Application', 'Size', 'Iteration', 'Value'])
-
 df_mean = df.groupby(['Platform','Application','Size']).agg({'Value': 'mean'}).reset_index()
 df_mean.to_csv('summary_results.csv', index=False)
 print(f"Saved summary results to 'summary_results.csv'")
@@ -164,6 +192,8 @@ for app in applications:
     coordinates="default"
     if app == 'lammps':
         coordinates="Matom-step/s"
+    if app == 'lammps_time':
+        coordinates="wall time (seconds)"
     elif app == 'osu_allreduce':
         coordinates="latency (us)"
     elif app == 'osu_latency':
@@ -185,8 +215,15 @@ for app in applications:
             showfliers=True
         )
         sns.despine(offset=10, trim=True)
+    elif app in ['lammps', 'lammps_time']:
+        sns.barplot(
+            data=subset,
+            x='Size',
+            y='Value',
+            hue='Platform',
+            order=sorted(subset.Size.unique())
+        )
     else:
-        subset = df_mean[df_mean['Application'] == app]
         sns.lineplot(
             data=subset,
             x='Size',
@@ -199,7 +236,6 @@ for app in applications:
         )
 
     plt.title(f'{app}')
-    plt.xticks(sorted(subset['Size'].unique()))
     plt.xlabel('Nodes')
     plt.ylabel(coordinates)
     plt.legend(title='Platform')

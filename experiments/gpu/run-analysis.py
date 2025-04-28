@@ -52,6 +52,7 @@ def main():
 
     # Find input directories (anything with data)
     files = ps.find_inputs(indir, "data")
+    print(files)
     files = [
         x
         for x in files
@@ -99,7 +100,6 @@ def parse_data(indir, outdir, files):
         # Now we can read each result file to get metrics.
         results = list(ps.get_outfiles(dirname))
 
-        # We drop the first iteration - we had to pull containers
         results = [x for x in results]
         for result in results:
 
@@ -107,8 +107,8 @@ def parse_data(indir, outdir, files):
             item = ps.read_file(result)
 
             # Real runtime
-            runtime = [x for x in item.split("\n") if "real" in x][0]
-            runtime = parse_timestamp(runtime.split("\t")[-1])
+            runtime = [x for x in item.split("\n") if "init_process_group" in x][0]
+            runtime = parse_timestamp(runtime.split(" ")[-2])
             p.add_result("time_seconds", runtime)
 
             # Epoch stats
