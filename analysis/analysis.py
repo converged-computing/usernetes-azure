@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 BASE_DIR = 'data'
 
-platforms = ['bare', 'usernetes']
+platforms = ['singularity', 'usernetes']
 
 applications = ['osu_allreduce', 'lammps', 'lammps_time', 'amg', 'minife', 'osu_latency', 'osu_bw']
 
@@ -207,24 +207,26 @@ for app in applications:
 
     subset = df[df['Application'] == app]
     if app == 'osu_latency' or app == 'osu_bw':
-        sns.boxplot(
+        ax=sns.boxplot(
             data=subset,
             x='Size',
             y='Value',
             hue='Platform',
             showfliers=True
         )
-        sns.despine(offset=10, trim=True)
+        ax.set(xticklabels=[])
+        plt.xlabel(None)
     elif app in ['lammps', 'lammps_time']:
-        sns.barplot(
+        ax=sns.barplot(
             data=subset,
             x='Size',
             y='Value',
             hue='Platform',
             order=sorted(subset.Size.unique())
         )
+        plt.xlabel('Nodes')
     else:
-        sns.lineplot(
+        ax=sns.lineplot(
             data=subset,
             x='Size',
             y='Value',
@@ -232,14 +234,16 @@ for app in applications:
             style='Platform',
             markers=True,
             dashes=False,
-            err_style='bars'
+            err_style='bars',
         )
+        ax.set(xticks=[4,8,16,32])
+        if app in ['minife', 'amg']:
+            ax.set(yscale='log')
+        plt.xlabel('Nodes')
 
     plt.title(f'{app}')
-    plt.xlabel('Nodes')
     plt.ylabel(coordinates)
     plt.legend(title='Platform')
-    plt.tight_layout()
     plot_filename = f'plot_{app}.png'
     plt.savefig(plot_filename)
     print(f"Saved plot for {app} as '{plot_filename}'")
