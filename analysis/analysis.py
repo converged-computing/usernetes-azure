@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 BASE_DIR = 'data'
 
-platforms = ['singularity', 'usernetes']
+platforms = ['bare', 'usernetes']
 
 applications = ['osu_allreduce', 'lammps', 'lammps_time', 'amg', 'minife', 'osu_latency', 'osu_bw']
 
@@ -16,6 +16,8 @@ osu_pattern = re.compile(r'osu_allreduce-(\d+)-iter-(\d+)-.*\.out')
 lammps_pattern = re.compile(r'lammps-(\d+)-iter-(\d+)-.*\.out')
 amg_pattern = re.compile(r'amg-(\d+)-iter-(\d+)-.*\.out')
 minife_pattern = re.compile(r'miniFE.230x230x230.P(\d+).*\.yaml')
+
+sns.set(font_scale=2)
 
 def extract_osu_bandwidth_value(filepath):
     with open(filepath, 'r') as f:
@@ -183,7 +185,7 @@ for platform in platforms:
 
 df = pd.DataFrame(records, columns=['Platform','Application', 'Size', 'Iteration', 'Value'])
 df_mean = df.groupby(['Platform','Application','Size']).agg({'Value': 'mean'}).reset_index()
-df_mean.to_csv('summary_results.csv', index=False)
+df.to_csv('summary_results.csv', index=False)
 print(f"Saved summary results to 'summary_results.csv'")
 
 sns.set(style="whitegrid")
@@ -206,6 +208,7 @@ for app in applications:
         coordinates="Total CG Mflops"
 
     subset = df[df['Application'] == app]
+    df["Size"] = df["Size"].astype(int)
     if app == 'osu_latency' or app == 'osu_bw':
         ax=sns.boxplot(
             data=subset,
@@ -216,7 +219,15 @@ for app in applications:
         )
         ax.set(xticklabels=[])
         plt.xlabel(None)
-    elif app in ['lammps', 'lammps_time']:
+    #elif app in ['lammps', 'lammps_time']:
+    #    sns.barplot(
+    #        data=subset,
+    #        x='Size',
+    #        y='Value',
+    #        hue='Platform',
+    #        order=sorted(subset.Size.unique())
+    #    )
+    else:
         ax=sns.barplot(
             data=subset,
             x='Size',
@@ -225,25 +236,24 @@ for app in applications:
             order=sorted(subset.Size.unique())
         )
         plt.xlabel('Nodes')
-    else:
-        ax=sns.lineplot(
-            data=subset,
-            x='Size',
-            y='Value',
-            hue='Platform',
-            style='Platform',
-            markers=True,
-            dashes=False,
-            err_style='bars',
-        )
-        ax.set(xticks=[4,8,16,32])
+        ax.tick_params(labelsize=15)
         if app in ['minife', 'amg']:
             ax.set(yscale='log')
-        plt.xlabel('Nodes')
+        #sns.lineplot(
+        #    data=subset,
+        #    x='Size',
+        #    y='Value',
+        #    hue='Platform',
+        #    style='Platform',
+        #    markers=True,
+        #    dashes=False,
+        #    err_style='bars'
+        #)
 
-    plt.title(f'{app}')
-    plt.ylabel(coordinates)
-    plt.legend(title='Platform')
+    plt.xlabel('Nodes', fontsize=15)
+    plt.ylabel(coordinates, fontsize=15)
+    plt.legend(title='Platform', fontsize=11)
+    plt.tight_layout()
     plot_filename = f'plot_{app}.png'
     plt.savefig(plot_filename)
     print(f"Saved plot for {app} as '{plot_filename}'")
